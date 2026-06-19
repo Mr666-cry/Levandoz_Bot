@@ -1,0 +1,393 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Levandoz - 503 Maintenance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #09090b;
+            --bg-panel: #121214;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --border-color: #27272a;
+            --terminal-bg: #000000;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: 'Inter', system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            /* Pola titik yang lebih halus dan statis seperti canvas */
+            background-image: radial-gradient(var(--border-color) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        .layout-wrapper {
+            width: 100%;
+            max-width: 640px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Header Section */
+        .header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 16px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header h1::before {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background-color: var(--text-main);
+        }
+
+        .status-badge {
+            display: inline-block;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            background: var(--text-main);
+            color: var(--bg-base);
+            padding: 2px 8px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Realistic Terminal Window */
+        .terminal-window {
+            background: var(--terminal-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .terminal-header {
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .term-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #3f3f46;
+            border: 1px solid #52525b;
+        }
+
+        .term-title {
+            margin-left: auto;
+            margin-right: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .terminal-body {
+            padding: 16px;
+            height: 220px;
+            overflow-y: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            position: relative;
+        }
+
+        /* Subtle scanline effect confined to terminal */
+        .terminal-body::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .terminal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+        .terminal-body::-webkit-scrollbar-track {
+            background: var(--bg-base);
+        }
+        .terminal-body::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+        }
+
+        .log-content {
+            color: #d4d4d8;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+
+        .log-line {
+            margin-bottom: 2px;
+            word-wrap: break-word;
+        }
+
+        .tag-sys { color: #71717a; }
+        .tag-err { color: #fff; background: #3f3f46; padding: 0 4px; margin-right: 6px;}
+        .tag-ok { color: #a1a1aa; }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background-color: var(--text-main);
+            vertical-align: middle;
+            animation: blink 1s step-end infinite;
+        }
+
+        /* Raw Button Style */
+        .action-area {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 8px;
+        }
+
+        .btn-restart {
+            background: var(--bg-base);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 12px 24px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-restart::before {
+            content: '>';
+            color: var(--text-muted);
+        }
+
+        .btn-restart:hover {
+            background: var(--text-main);
+            color: var(--bg-base);
+            border-color: var(--text-main);
+        }
+
+        .btn-restart:hover::before {
+            color: var(--bg-base);
+        }
+
+        .btn-restart:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: 'Fira Code', monospace;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        @media (max-width: 500px) {
+            .header h1 { font-size: 1.5rem; }
+            .terminal-body { height: 180px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="layout-wrapper">
+        <header class="header">
+            <div class="status-badge">HTTP 503</div>
+            <h1>Levandoz</h1>
+            <p class="desc">Sistem dinonaktifkan sementara karena alasan: <strong>Perawatan Server Rutin</strong>. Mohon tunggu beberapa saat hingga proses selesai.</p>
+        </header>
+
+        <main>
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <div class="term-btn"></div>
+                    <div class="term-btn"></div>
+                    <div class="term-btn"></div>
+                    <div class="term-title">root@levandoz-srv:~</div>
+                </div>
+                <div class="terminal-body" id="consoleBox">
+                    <div class="log-content" id="consoleOutput"></div>
+                    <span class="cursor" id="cursor"></span>
+                </div>
+            </div>
+
+            <div class="action-area">
+                <button class="btn-restart" id="btnRestart">EXECUTE RESTART</button>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <span>SYSADMIN: SAMUDEV</span>
+            <span>NODE_ID: LVDZ-01</span>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const output = document.getElementById('consoleOutput');
+            const consoleBox = document.getElementById('consoleBox');
+            const btnRestart = document.getElementById('btnRestart');
+            
+            const scrollToBottom = () => {
+                consoleBox.scrollTop = consoleBox.scrollHeight;
+            };
+
+            // Fungsi pengetikan dengan delay acak agar terasa diketik oleh manusia/jaringan
+            const typeWriter = (text, minSpeed, maxSpeed, isHTML = false, callback = null) => {
+                let i = 0;
+                const line = document.createElement('div');
+                line.className = 'log-line';
+                output.appendChild(line);
+
+                const typeChar = () => {
+                    if (i < text.length) {
+                        if (isHTML) {
+                            // Jika menggunakan HTML (seperti tag span), langsung tampilkan satu baris
+                            line.innerHTML = text;
+                            scrollToBottom();
+                            if (callback) setTimeout(callback, 200);
+                            return;
+                        } else {
+                            line.textContent += text.charAt(i);
+                            i++;
+                            scrollToBottom();
+                            
+                            // Delay acak antara minSpeed dan maxSpeed
+                            const randomDelay = Math.floor(Math.random() * (maxSpeed - minSpeed + 1) + minSpeed);
+                            setTimeout(typeChar, randomDelay);
+                        }
+                    } else {
+                        if (callback) setTimeout(callback, 200);
+                    }
+                };
+                
+                typeChar();
+            };
+
+            // Booting sequence log realistis
+            const bootSequence = [
+                { text: "<span class='tag-sys'>[ INFO ]</span> Menghubungkan ke root@levandoz...", delay: 500 },
+                { text: "<span class='tag-sys'>[ OK ]</span> Ping response diterima (24ms).", delay: 800 },
+                { text: "<span class='tag-sys'>[ INFO ]</span> Memeriksa status service database...", delay: 400 },
+                { text: "<span class='tag-err'>[ FAIL ]</span> Koneksi ke DB utama ditolak.", delay: 1200 },
+                { text: "<span class='tag-sys'>[ WARN ]</span> Memicu protokol keamanan. Mode isolasi aktif.", delay: 500 },
+                { text: "----------------------------------------", delay: 300 },
+                { text: "STATUS SERVER: OFFLINE (MAINTENANCE MODE)", delay: 800 },
+                { text: "Menunggu perintah administrator...", delay: 400 }
+            ];
+
+            let sequenceIndex = 0;
+
+            const runBootSequence = () => {
+                if (sequenceIndex < bootSequence.length) {
+                    const step = bootSequence[sequenceIndex];
+                    setTimeout(() => {
+                        // Jika ada tag HTML, proses sekaligus. Jika teks biasa, beri efek ketik.
+                        const hasHTML = step.text.includes('<span');
+                        typeWriter(step.text, 10, 40, hasHTML, runBootSequence);
+                    }, step.delay);
+                    sequenceIndex++;
+                }
+            };
+
+            // Mulai sequence
+            setTimeout(runBootSequence, 500);
+
+            // Logika Tombol Restart
+            btnRestart.addEventListener('click', () => {
+                btnRestart.disabled = true;
+                btnRestart.innerHTML = "[ EXECUTING... ]";
+
+                // Tambah spasi
+                const space = document.createElement('div');
+                space.style.height = "10px";
+                output.appendChild(space);
+
+                typeWriter("root@levandoz-srv:~# sudo reboot web-server", 30, 80, false, () => {
+                    setTimeout(() => {
+                        const lineRestart = document.createElement('div');
+                        lineRestart.className = 'log-line';
+                        lineRestart.innerHTML = "<span class='tag-sys'>[ SYS ]</span> Merestart daemon";
+                        output.appendChild(lineRestart);
+                        
+                        let dots = 0;
+                        const dotInterval = setInterval(() => {
+                            lineRestart.innerHTML += ".";
+                            dots++;
+                            scrollToBottom();
+                            
+                            if (dots >= 4) {
+                                clearInterval(dotInterval);
+                                typeWriter("<span class='tag-sys'>[ OK ]</span> Restart command sent. Reloading UI...", 10, 20, true, () => {
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 800);
+                                });
+                            }
+                        }, 500);
+                    }, 400);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+  
